@@ -1,11 +1,40 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-
 import { api } from "@/utils/api";
-import { SignInButton, useUser } from "@clerk/nextjs";
+import type { RouterOutputs } from "@/utils/api";
+import { Navbar } from "@/components/Navbar";
+import Image from "next/image";
+
+type PostWithUserInfo = RouterOutputs["post"]["getAll"][number];
+
+const SinglePost = (props: PostWithUserInfo) => {
+  const { post, author } = props;
+  return (
+    <div
+      className="box-border cursor-pointer rounded-md border-[1px] border-neutral bg-neutral p-4 hover:border-white"
+      key={post.id}
+    >
+      <div className="mb-2 flex flex-row gap-2">
+        <Image
+          className="rounded-full"
+          src={`${author.profilePicture}`}
+          alt="profile picture"
+          width={24}
+          height={24}
+        />
+        <div className="flex gap-2 text-slate-500">
+          <span className="text-white">u/{author.username}</span>
+          <span>-</span>
+          <span>posted 1 hour ago</span>
+        </div>
+      </div>
+      <h3 className="mb-3 text-xl">{post.title}</h3>
+      <p className="text-lg">{post.content}</p>
+    </div>
+  );
+};
 
 const Home: NextPage = () => {
-  const { user, isSignedIn } = useUser();
   const { data, isLoading: isPostsLoading } = api.post.getAll.useQuery();
   let postContent;
 
@@ -17,14 +46,11 @@ const Home: NextPage = () => {
 
   if (data) {
     postContent = (
-      <>
-        {data?.map((post) => (
-          <div className="mb-2 w-1/3" key={post.id}>
-            <span>{post.title}</span>
-            <p>{post.content}</p>
-          </div>
+      <div className="mt-5 flex flex-col gap-3">
+        {[...data, ...data].map((post) => (
+          <SinglePost {...post} key={post.post.id} />
         ))}
-      </>
+      </div>
     );
   }
   return (
@@ -36,19 +62,10 @@ const Home: NextPage = () => {
       </Head>
       <main
         data-theme="halloween"
-        className="flex min-h-screen flex-col items-center justify-center"
+        className="flex w-full flex-col items-center justify-center"
       >
-        {!isSignedIn && (
-          <div>
-            <SignInButton />
-          </div>
-        )}
-        {user && (
-          <div className="mb-3 flex flex-col items-center justify-center gap-3">
-            <span>{user.username}</span>
-          </div>
-        )}
-        {postContent}
+        <Navbar />
+        <div className="h-full w-full md:max-w-2xl">{postContent}</div>
       </main>
     </>
   );
