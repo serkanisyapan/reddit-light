@@ -17,15 +17,13 @@ export const Navbar = () => {
         <span>{user.username}</span>
         <div className="dropdown-end dropdown">
           <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
-            <div className="rounded-full">
-              <Image
-                className="rounded-full"
-                src={`${user.profileImageUrl}`}
-                alt={`${user.username}'s profile picture`}
-                width={32}
-                height={32}
-              />
-            </div>
+            <Image
+              className="rounded-full"
+              src={`${user.profileImageUrl}`}
+              alt={`${user.username}'s profile picture`}
+              width={32}
+              height={32}
+            />
           </label>
           <ul
             tabIndex={0}

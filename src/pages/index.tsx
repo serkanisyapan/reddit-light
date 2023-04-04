@@ -4,6 +4,9 @@ import { api } from "@/utils/api";
 import type { RouterOutputs } from "@/utils/api";
 import { Navbar } from "@/components/Navbar";
 import Image from "next/image";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
+import Link from "next/link";
+import { PlusIcon } from "@/components/Icons";
 
 type PostWithUserInfo = RouterOutputs["post"]["getAll"][number];
 
@@ -39,17 +42,30 @@ const Home: NextPage = () => {
   let postContent;
 
   if (isPostsLoading) {
-    postContent = <div>Loading...</div>;
+    postContent = (
+      <div className="flex h-screen items-center justify-center">
+        <LoadingSpinner size={52} />
+      </div>
+    );
   } else if (!data) {
-    postContent = <div>Something went wrong...</div>;
+    postContent = <div className="h-screen">Something went wrong...</div>;
   }
 
   if (data) {
     postContent = (
-      <div className="mt-5 flex flex-col gap-3">
-        {[...data, ...data].map((post) => (
-          <SinglePost {...post} key={post.post.id} />
-        ))}
+      <div>
+        <div className="mt-5 flex flex-col gap-3">
+          {[...data, ...data].map((post) => (
+            <SinglePost {...post} key={post.post.id} />
+          ))}
+        </div>
+        <Link
+          href="/create-post"
+          className="btn-primary btn fixed bottom-8 right-5 gap-1 rounded-full"
+        >
+          <PlusIcon />
+          Create Post
+        </Link>
       </div>
     );
   }
@@ -62,7 +78,7 @@ const Home: NextPage = () => {
       </Head>
       <main
         data-theme="halloween"
-        className="flex w-full flex-col items-center justify-center"
+        className="flex h-full w-full flex-col items-center justify-center"
       >
         <Navbar />
         <div className="h-full w-full md:max-w-2xl">{postContent}</div>
