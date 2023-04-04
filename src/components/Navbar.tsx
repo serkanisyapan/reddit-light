@@ -1,5 +1,6 @@
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import Image from "next/image";
+import Link from "next/link";
 
 export const Navbar = () => {
   const { user, isSignedIn } = useUser();
@@ -30,6 +31,9 @@ export const Navbar = () => {
             className="dropdown-content menu rounded-box menu-compact mt-3 w-52 bg-primary p-2 shadow"
           >
             <li>
+              <Link href={`/user/${user.username}`}>Profile</Link>
+            </li>
+            <li>
               <SignOutButton />
             </li>
           </ul>
@@ -41,7 +45,9 @@ export const Navbar = () => {
   return (
     <div className="navbar bg-primary text-primary-content">
       <div className="flex-1">
-        <a className="btn-ghost btn text-xl normal-case">Reddit Light</a>
+        <Link href="/" className="btn-ghost btn text-xl normal-case">
+          Reddit Light
+        </Link>
       </div>
       <div className="flex-none gap-2">
         <div>

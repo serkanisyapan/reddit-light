@@ -3,6 +3,6 @@ export const filterUserInfo = (user: User) => {
   return {
     id: user.id,
     username: user.username,
-    profileImageUrl: user.profileImageUrl,
+    profilePicture: user.profileImageUrl,
   }
 }

@@ -23,3 +23,11 @@ export const LoadingSpinner = (props: { size?: number }) => {
     </div>
   );
 };
+
+export const SpinnerContainer = () => {
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <LoadingSpinner size={52} />
+    </div>
+  );
+};

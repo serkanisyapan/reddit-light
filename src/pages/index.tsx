@@ -1,48 +1,12 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { api } from "@/utils/api";
-import type { RouterOutputs } from "@/utils/api";
 import { Navbar } from "@/components/Navbar";
-import Image from "next/image";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { SpinnerContainer } from "@/components/LoadingSpinner";
 import Link from "next/link";
 import { PlusIcon } from "@/components/Icons";
 import { useUser } from "@clerk/nextjs";
-
-type PostWithUserInfo = RouterOutputs["post"]["getAll"][number];
-
-const SinglePost = (props: PostWithUserInfo) => {
-  const { post, author } = props;
-  return (
-    <Link href={`/post/${post.id}`} legacyBehavior>
-      <div
-        className="box-border cursor-pointer rounded-md border-[1px] border-neutral bg-neutral p-4 hover:border-white"
-        key={post.id}
-      >
-        <div className="mb-2 flex flex-row gap-2">
-          <Image
-            className="rounded-full "
-            src={`${author.profilePicture}`}
-            alt="profile picture"
-            width={24}
-            height={24}
-          />
-          <div className="flex gap-2 text-slate-500">
-            <Link href={`/user/${author.username}`}>
-              <span className="text-white hover:cursor-pointer hover:underline">
-                u/{author.username}
-              </span>
-            </Link>
-            <span>-</span>
-            <span>posted 1 hour ago</span>
-          </div>
-        </div>
-        <h3 className="mb-3 text-xl">{post.title}</h3>
-        <p className="text-lg">{post.content}</p>
-      </div>
-    </Link>
-  );
-};
+import { SinglePost } from "@/components/SinglePost";
 
 const Home: NextPage = () => {
   const { data, isLoading: isPostsLoading } = api.post.getAll.useQuery();
@@ -50,11 +14,7 @@ const Home: NextPage = () => {
   let postContent;
 
   if (isPostsLoading) {
-    postContent = (
-      <div className="flex h-screen items-center justify-center">
-        <LoadingSpinner size={52} />
-      </div>
-    );
+    postContent = <SpinnerContainer />;
   } else if (!data) {
     postContent = <div className="h-screen">Something went wrong...</div>;
   }
