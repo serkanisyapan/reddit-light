@@ -24,19 +24,20 @@ export default function App() {
     },
   });
   const { mutate, isLoading: isPosting } = api.post.createPost.useMutation({
-      onSuccess: () => {
-          router.push("/")
-        }
-    });
+    onSuccess: () => {
+      void router.push("/");
+    },
+  });
 
   const onSubmit: SubmitHandler<PostInputs> = (data) => {
-    mutate({content: data.content, title: data.title})
+    void mutate({ content: data.content, title: data.title });
   };
 
   return (
     <div className="flex h-screen justify-center">
       <form
         className="mt-16 flex w-96 flex-col p-2"
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         onSubmit={handleSubmit(onSubmit)}
       >
         <div>
@@ -62,7 +63,11 @@ export default function App() {
           {...register("content", { required: true })}
         />
         {errors.content && <span>This field is required</span>}
-        <button disabled={isPosting} className="btn-primary btn mt-5" type="submit">
+        <button
+          disabled={isPosting}
+          className="btn-primary btn mt-5"
+          type="submit"
+        >
           {isPosting ? <LoadingSpinner /> : "Create Post"}
         </button>
       </form>
