@@ -7,38 +7,46 @@ import Image from "next/image";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import Link from "next/link";
 import { PlusIcon } from "@/components/Icons";
+import { useUser } from "@clerk/nextjs";
 
 type PostWithUserInfo = RouterOutputs["post"]["getAll"][number];
 
 const SinglePost = (props: PostWithUserInfo) => {
   const { post, author } = props;
   return (
-    <div
-      className="box-border cursor-pointer rounded-md border-[1px] border-neutral bg-neutral p-4 hover:border-white"
-      key={post.id}
-    >
-      <div className="mb-2 flex flex-row gap-2">
-        <Image
-          className="rounded-full"
-          src={`${author.profilePicture}`}
-          alt="profile picture"
-          width={24}
-          height={24}
-        />
-        <div className="flex gap-2 text-slate-500">
-          <span className="text-white">u/{author.username}</span>
-          <span>-</span>
-          <span>posted 1 hour ago</span>
+    <Link href={`/post/${post.id}`} legacyBehavior>
+      <div
+        className="box-border cursor-pointer rounded-md border-[1px] border-neutral bg-neutral p-4 hover:border-white"
+        key={post.id}
+      >
+        <div className="mb-2 flex flex-row gap-2">
+          <Image
+            className="rounded-full "
+            src={`${author.profilePicture}`}
+            alt="profile picture"
+            width={24}
+            height={24}
+          />
+          <div className="flex gap-2 text-slate-500">
+            <Link href={`/user/${author.username}`}>
+              <span className="text-white hover:cursor-pointer hover:underline">
+                u/{author.username}
+              </span>
+            </Link>
+            <span>-</span>
+            <span>posted 1 hour ago</span>
+          </div>
         </div>
+        <h3 className="mb-3 text-xl">{post.title}</h3>
+        <p className="text-lg">{post.content}</p>
       </div>
-      <h3 className="mb-3 text-xl">{post.title}</h3>
-      <p className="text-lg">{post.content}</p>
-    </div>
+    </Link>
   );
 };
 
 const Home: NextPage = () => {
   const { data, isLoading: isPostsLoading } = api.post.getAll.useQuery();
+  const { isSignedIn } = useUser();
   let postContent;
 
   if (isPostsLoading) {
@@ -59,13 +67,15 @@ const Home: NextPage = () => {
             <SinglePost {...post} key={post.post.id} />
           ))}
         </div>
-        <Link
-          href="/create-post"
-          className="btn-primary btn fixed bottom-8 right-5 gap-1 rounded-full"
-        >
-          <PlusIcon />
-          Create Post
-        </Link>
+        {isSignedIn && (
+          <Link
+            href="/create-post"
+            className="btn-primary btn fixed bottom-8 right-5 gap-1 rounded-full"
+          >
+            <PlusIcon />
+            Create Post
+          </Link>
+        )}
       </>
     );
   }
@@ -77,7 +87,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />
-      <div className="md:max-w-2xl mb-8">{postContent}</div>
+      <div className="mb-8 md:max-w-2xl">{postContent}</div>
     </>
   );
 };
