@@ -1,15 +1,9 @@
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-
-const postValidator = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(1, { message: "Title must be between 1-255 chars." })
-    .max(255),
-  content: z.string().trim().min(1, { message: "Text cannot be empty." }),
-});
+import { postValidation } from "@/utils/postValidation";
+import { api } from "@/utils/api";
+import { useRouter } from "next/router";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 type PostInputs = {
   title: string;
@@ -17,21 +11,30 @@ type PostInputs = {
 };
 
 export default function App() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<PostInputs>({
-    resolver: zodResolver(postValidator),
+    resolver: zodResolver(postValidation),
     defaultValues: {
       title: "",
       content: "",
     },
   });
-  const onSubmit: SubmitHandler<PostInputs> = (data) => console.log(data);
+  const { mutate, isLoading: isPosting } = api.post.createPost.useMutation({
+      onSuccess: () => {
+          router.push("/")
+        }
+    });
+
+  const onSubmit: SubmitHandler<PostInputs> = (data) => {
+    mutate({content: data.content, title: data.title})
+  };
 
   return (
-    <div data-theme="halloween" className="flex h-screen justify-center">
+    <div className="flex h-screen justify-center">
       <form
         className="mt-16 flex w-96 flex-col p-2"
         onSubmit={handleSubmit(onSubmit)}
@@ -59,8 +62,8 @@ export default function App() {
           {...register("content", { required: true })}
         />
         {errors.content && <span>This field is required</span>}
-        <button className="btn-primary btn mt-5" type="submit">
-          Create Post
+        <button disabled={isPosting} className="btn-primary btn mt-5" type="submit">
+          {isPosting ? <LoadingSpinner /> : "Create Post"}
         </button>
       </form>
     </div>
