@@ -6,7 +6,7 @@ import { SinglePost } from "@/components/SinglePost";
 import { Navbar } from "@/components/Navbar";
 
 const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
-  const { data } = api.post.getById.useQuery({
+  const { data } = api.post.getPostById.useQuery({
     id,
   });
   if (!data) return <div>404</div>;
@@ -30,7 +30,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = generateSSGHelper();
   const id = context.params?.id;
   if (typeof id !== "string") throw new Error("No id found.");
-  await ssg.post.getById.prefetch({ id });
+  await ssg.post.getPostById.prefetch({ id });
   return {
     props: {
       trpcState: ssg.dehydrate(),

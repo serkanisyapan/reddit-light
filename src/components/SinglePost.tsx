@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { DeleteIcon, EditIcon, MoreIcon } from "./Icons";
 dayjs.extend(relativeTime);
 
 type PostWithUserInfo = RouterOutputs["post"]["getAll"][number];
@@ -23,22 +24,50 @@ export const SinglePost = (props: SinglePostProps) => {
         }`}
         key={post.id}
       >
-        <div className="mb-2 flex flex-row gap-2">
-          <Image
-            className="rounded-full "
-            src={`${author.profilePicture}`}
-            alt="profile picture"
-            width={24}
-            height={24}
-          />
-          <div className="flex gap-2 text-slate-500">
-            <Link href={`/user/${author.username}`}>
-              <span className="text-white hover:cursor-pointer hover:underline">
-                u/{author.username}
-              </span>
-            </Link>
-            <span>-</span>
-            <span>{`${dayjs(post.createdAt).fromNow()}`}</span>
+        <div className="mb-2 flex flex-row items-center justify-between gap-2">
+          <div className="flex flex-row gap-2">
+            <Image
+              className="rounded-full "
+              src={`${author.profilePicture}`}
+              alt="profile picture"
+              width={24}
+              height={24}
+            />
+            <div className="flex gap-2 text-slate-500">
+              <Link href={`/user/${author.username}`}>
+                <span className="text-white hover:cursor-pointer hover:underline">
+                  u/{author.username}
+                </span>
+              </Link>
+              <span>-</span>
+              <span>{`${dayjs(post.createdAt).fromNow()}`}</span>
+            </div>
+          </div>
+          <div className="dropdown-end dropdown">
+            <label
+              onClick={(event) => event.stopPropagation()}
+              tabIndex={0}
+              className="cursor-pointer"
+            >
+              <MoreIcon />
+            </label>
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
+            >
+              <li>
+                <a>
+                  <EditIcon />
+                  Edit Post
+                </a>
+              </li>
+              <li>
+                <a>
+                  <DeleteIcon />
+                  Delete Post
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
         <h3 className="mb-3 text-xl">{post.title}</h3>
