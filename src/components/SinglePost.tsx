@@ -3,13 +3,21 @@ import Link from "next/link";
 import Image from "next/image";
 
 type PostWithUserInfo = RouterOutputs["post"]["getAll"][number];
+interface SinglePostProps extends PostWithUserInfo {
+  isPostPage?: boolean;
+}
 
-export const SinglePost = (props: PostWithUserInfo) => {
-  const { post, author } = props;
+export const SinglePost = (props: SinglePostProps) => {
+  const { post, author, isPostPage: isPost } = props;
+  if (!isPost && post.content.length > 250) {
+    post.content = post.content.slice(0, 250) + "...";
+  }
   return (
     <Link href={`/post/${post.id}`} legacyBehavior>
       <div
-        className="box-border cursor-pointer rounded-md border-[1px] border-neutral bg-neutral p-4 hover:border-white"
+        className={`box-border rounded-md border-[1px] border-neutral bg-neutral-focus p-4 ${
+          isPost ? "" : "cursor-pointer hover:border-white"
+        }`}
         key={post.id}
       >
         <div className="mb-2 flex flex-row gap-2">
@@ -31,7 +39,17 @@ export const SinglePost = (props: PostWithUserInfo) => {
           </div>
         </div>
         <h3 className="mb-3 text-xl">{post.title}</h3>
-        <p className="text-lg">{post.content}</p>
+        <p className="text-lg">
+          {post.content}
+          {!isPost && post.content.length > 250 && (
+            <Link
+              className="ml-2 cursor-pointer text-primary hover:underline"
+              href={`/post/${post.id}`}
+            >
+              Read More
+            </Link>
+          )}
+        </p>
       </div>
     </Link>
   );
