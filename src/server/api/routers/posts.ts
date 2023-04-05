@@ -5,6 +5,8 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import type { Post } from "@prisma/client";
 import { filterUserInfo } from "@/utils/filterUserInfo";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
 const addUserDataToPost = async (posts: Post[]) => {
     const users = (await clerkClient.users.getUserList({
@@ -29,6 +31,14 @@ const addUserDataToPost = async (posts: Post[]) => {
       }
 })}
 
+// Create a new ratelimiter, that allows 1 requests per 1 minutes
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(1, "1 m"),
+  analytics: true,
+  prefix: "@upstash/ratelimit",
+});
+
 export const postRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
@@ -40,6 +50,9 @@ export const postRouter = createTRPCRouter({
 
   createPost: privateProcedure.input(postValidation).mutation(async ({ ctx, input }) => {
     const authorId = ctx.userId;
+    const { success } = await ratelimit.limit(authorId)
+    if (!success) throw new TRPCError({code: "TOO_MANY_REQUESTS"})
+
     const post = await ctx.prisma.post.create({
       data: {
         authorId,
