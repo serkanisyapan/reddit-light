@@ -1,9 +1,12 @@
-import type { RouterOutputs } from "@/utils/api";
+import { api, type RouterOutputs } from "@/utils/api";
 import Link from "next/link";
 import Image from "next/image";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { DeleteIcon, EditIcon, MoreIcon } from "./Icons";
+import { useUser } from "@clerk/nextjs";
+import { LoadingSpinner } from "./LoadingSpinner";
+import { useRouter } from "next/router";
 dayjs.extend(relativeTime);
 
 type PostWithUserInfo = RouterOutputs["post"]["getAll"][number];
@@ -12,15 +15,35 @@ interface SinglePostProps extends PostWithUserInfo {
 }
 
 export const SinglePost = (props: SinglePostProps) => {
-  const { post, author, isPostPage: isPost } = props;
-  if (!isPost && post.content.length > 250) {
+  const { post, author, isPostPage } = props;
+  const router = useRouter();
+  const { user } = useUser();
+  const ctx = api.useContext();
+  const { mutate, isLoading: isDeleting } = api.post.deletePost.useMutation({
+    onSuccess: () => {
+      if (!router) return;
+      if (router.pathname === "/") {
+        void ctx.post.getAll.invalidate();
+      }
+      if (router.pathname === "/user/[slug]") {
+        void ctx.post.getPostsByUserId.invalidate();
+      }
+      if (router.pathname === "/post/[id]") {
+        void router.push("/");
+      }
+    },
+  });
+
+  const isPostAuthor = post.authorId === user?.id;
+  if (!isPostPage && post.content.length > 250) {
     post.content = post.content.slice(0, 250) + "...";
   }
+
   return (
     <Link href={`/post/${post.id}`} legacyBehavior>
       <div
         className={`box-border rounded-md border-[1px] border-neutral bg-neutral-focus p-4 ${
-          isPost ? "" : "cursor-pointer hover:border-white"
+          isPostPage ? "" : "cursor-pointer hover:border-white"
         }`}
         key={post.id}
       >
@@ -43,37 +66,44 @@ export const SinglePost = (props: SinglePostProps) => {
               <span>{`${dayjs(post.createdAt).fromNow()}`}</span>
             </div>
           </div>
-          <div className="dropdown-end dropdown">
-            <label
-              onClick={(event) => event.stopPropagation()}
-              tabIndex={0}
-              className="cursor-pointer"
-            >
-              <MoreIcon />
-            </label>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
-            >
-              <li>
-                <a>
-                  <EditIcon />
-                  Edit Post
-                </a>
-              </li>
-              <li>
-                <a>
-                  <DeleteIcon />
-                  Delete Post
-                </a>
-              </li>
-            </ul>
-          </div>
+          {isPostAuthor && (
+            <div className="dropdown-end dropdown">
+              <label
+                onClick={(event) => event.stopPropagation()}
+                tabIndex={0}
+                className="cursor-pointer"
+              >
+                <MoreIcon />
+              </label>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
+              >
+                <li>
+                  <a>
+                    <EditIcon />
+                    Edit Post
+                  </a>
+                </li>
+                <li
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    mutate({ id: post.id, userId: author.id });
+                  }}
+                >
+                  <a>
+                    {isDeleting ? <LoadingSpinner /> : <DeleteIcon />}
+                    Delete Post
+                  </a>
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
         <h3 className="mb-3 text-xl">{post.title}</h3>
         <p className="text-lg">
           {post.content}
-          {!isPost && post.content.length > 250 && (
+          {!isPostPage && post.content.length > 250 && (
             <Link
               className="ml-2 cursor-pointer text-primary hover:underline"
               href={`/post/${post.id}`}

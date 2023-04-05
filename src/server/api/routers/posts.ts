@@ -63,6 +63,19 @@ export const postRouter = createTRPCRouter({
     return post;
   }),
 
+  deletePost: privateProcedure
+  .input(z.object({id: z.string(), userId: z.string()}))
+  .mutation(async({ ctx, input }) => {
+    const authorId = ctx.userId
+    if (input.userId !== authorId) throw new TRPCError({code: "UNAUTHORIZED"})
+    const post = await ctx.prisma.post.delete({
+      where: {
+        id: input.id
+      }
+    })
+    return post
+  }),
+
   getPostsByUserId: publicProcedure
   .input(z.object({
     userId: z.string()
