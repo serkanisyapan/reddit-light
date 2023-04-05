@@ -1,6 +1,9 @@
 import type { RouterOutputs } from "@/utils/api";
 import Link from "next/link";
 import Image from "next/image";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
 type PostWithUserInfo = RouterOutputs["post"]["getAll"][number];
 interface SinglePostProps extends PostWithUserInfo {
@@ -35,7 +38,7 @@ export const SinglePost = (props: SinglePostProps) => {
               </span>
             </Link>
             <span>-</span>
-            <span>posted 1 hour ago</span>
+            <span>{`${dayjs(post.createdAt).fromNow()}`}</span>
           </div>
         </div>
         <h3 className="mb-3 text-xl">{post.title}</h3>
