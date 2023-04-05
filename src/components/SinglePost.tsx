@@ -47,7 +47,7 @@ export const SinglePost = (props: SinglePostProps) => {
         }`}
         key={post.id}
       >
-        <div className="mb-2 flex flex-row items-center justify-between gap-2">
+        <div className="mb-2 flex flex-row items-center justify-between gap-2 text-sm">
           <div className="flex flex-row gap-2">
             <Image
               className="rounded-full "
@@ -56,7 +56,7 @@ export const SinglePost = (props: SinglePostProps) => {
               width={24}
               height={24}
             />
-            <div className="flex gap-2 text-slate-500">
+            <div className="flex items-center gap-2 text-slate-500">
               <Link href={`/user/${author.username}`}>
                 <span className="text-white hover:cursor-pointer hover:underline">
                   u/{author.username}
@@ -101,7 +101,7 @@ export const SinglePost = (props: SinglePostProps) => {
           )}
         </div>
         <h3 className="mb-3 text-xl">{post.title}</h3>
-        <p className="text-lg">
+        <p className="whitespace-pre-wrap text-base">
           {post.content}
           {!isPostPage && post.content.length > 250 && (
             <Link
