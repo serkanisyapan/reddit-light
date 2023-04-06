@@ -45,12 +45,14 @@ const PostOptions = (props: SinglePostProps) => {
         tabIndex={0}
         className="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
       >
-        <li>
-          <a>
-            <EditIcon />
-            Edit Post
-          </a>
-        </li>
+        <Link href={`/post/edit/${post.id}`}>
+          <li>
+            <a>
+              <EditIcon />
+              Edit Post
+            </a>
+          </li>
+        </Link>
         <li
           onClick={(event) => {
             event.stopPropagation();
