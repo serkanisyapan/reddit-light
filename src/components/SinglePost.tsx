@@ -3,7 +3,13 @@ import Link from "next/link";
 import Image from "next/image";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { DeleteIcon, EditIcon, MoreIcon } from "./Icons";
+import {
+  DeleteIcon,
+  DownvoteIcon,
+  EditIcon,
+  MoreIcon,
+  UpvoteIcon,
+} from "./Icons";
 import { useUser } from "@clerk/nextjs";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { useRouter } from "next/router";
@@ -69,6 +75,17 @@ const PostOptions = (props: SinglePostProps) => {
   );
 };
 
+const VoteSection = (props: SinglePostProps) => {
+  const { post } = props;
+  return (
+    <div className="mr-3 flex flex-col items-center">
+      <UpvoteIcon />
+      <span>{post.upvotes}</span>
+      <DownvoteIcon />
+    </div>
+  );
+};
+
 export const SinglePost = (props: SinglePostProps) => {
   const { post, author, isPostPage } = props;
   const { user } = useUser();
@@ -81,44 +98,47 @@ export const SinglePost = (props: SinglePostProps) => {
   return (
     <Link href={`/post/${post.id}`} legacyBehavior>
       <div
-        className={`box-border rounded-md border-[1px] border-neutral bg-neutral-focus p-4 ${
+        className={`box-border flex rounded-md border-[1px] border-neutral bg-neutral-focus p-4 ${
           isPostPage ? "" : "cursor-pointer hover:border-white"
         }`}
         key={post.id}
       >
-        <div className="mb-2 flex flex-row items-center justify-between gap-2 text-sm">
-          <div className="flex flex-row gap-2">
-            <Image
-              className="rounded-full "
-              src={`${author.profilePicture}`}
-              alt="profile picture"
-              width={24}
-              height={24}
-            />
-            <div className="flex items-center gap-2 text-slate-500">
-              <Link href={`/user/${author.username}`}>
-                <span className="text-white hover:cursor-pointer hover:underline">
-                  u/{author.username}
-                </span>
-              </Link>
-              <span>-</span>
-              <span>{`${dayjs(post.createdAt).fromNow()}`}</span>
+        <VoteSection {...props} />
+        <div>
+          <div className="mb-2 flex flex-row items-center justify-between gap-2 text-sm">
+            <div className="flex flex-row gap-2">
+              <Image
+                className="rounded-full "
+                src={`${author.profilePicture}`}
+                alt="profile picture"
+                width={24}
+                height={24}
+              />
+              <div className="flex items-center gap-2 text-slate-500">
+                <Link href={`/user/${author.username}`}>
+                  <span className="text-white hover:cursor-pointer hover:underline">
+                    u/{author.username}
+                  </span>
+                </Link>
+                <span>-</span>
+                <span>{`${dayjs(post.createdAt).fromNow()}`}</span>
+              </div>
             </div>
+            {isPostAuthor && <PostOptions {...props} />}
           </div>
-          {isPostAuthor && <PostOptions {...props} />}
+          <h3 className="mb-3 text-xl">{post.title}</h3>
+          <p className="whitespace-pre-wrap text-base">
+            {post.content}
+            {!isPostPage && post.content.length > 250 && (
+              <Link
+                className="ml-2 cursor-pointer text-primary hover:underline"
+                href={`/post/${post.id}`}
+              >
+                Read More
+              </Link>
+            )}
+          </p>
         </div>
-        <h3 className="mb-3 text-xl">{post.title}</h3>
-        <p className="whitespace-pre-wrap text-base">
-          {post.content}
-          {!isPostPage && post.content.length > 250 && (
-            <Link
-              className="ml-2 cursor-pointer text-primary hover:underline"
-              href={`/post/${post.id}`}
-            >
-              Read More
-            </Link>
-          )}
-        </p>
       </div>
     </Link>
   );

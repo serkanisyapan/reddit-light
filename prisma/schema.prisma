@@ -16,6 +16,7 @@ model Post {
     updatedAt DateTime @updatedAt
     title     String   @db.VarChar(255)
     content   String   @db.Text
+    upvotes   Int      @default(0) @db.Int
     authorId  String
 
     @@index([authorId])

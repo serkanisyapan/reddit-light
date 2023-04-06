@@ -77,3 +77,50 @@ export const DeleteIcon = () => {
     </svg>
   );
 };
+
+export const UpvoteIcon = () => {
+  return (
+    <svg
+      className="hover:stroke-primary"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke="white"
+      strokeWidth="1"
+      strokeLinecap="round"
+      strokeLinejoin="miter"
+    >
+      <polygon points="3 14 12 3 21 14 16 14 16 22 8 22 8 14 3 14"></polygon>
+    </svg>
+  );
+};
+
+export const DownvoteIcon = () => {
+  return (
+    <svg
+      className="hover:stroke-sky-600"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke="white"
+      strokeWidth="1"
+      strokeLinecap="round"
+      strokeLinejoin="miter"
+      transform="matrix(1, 0, 0, -1, 0, 0)"
+    >
+      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+      <g
+        id="SVGRepo_tracerCarrier"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      ></g>
+      <g id="SVGRepo_iconCarrier">
+        <polygon points="3 14 12 3 21 14 16 14 16 22 8 22 8 14 3 14"></polygon>
+      </g>
+    </svg>
+  );
+};
