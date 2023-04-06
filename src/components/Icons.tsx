@@ -81,7 +81,7 @@ export const DeleteIcon = () => {
 export const UpvoteIcon = () => {
   return (
     <svg
-      className="hover:stroke-primary"
+      className="cursor-pointer hover:stroke-primary"
       width="20"
       height="20"
       viewBox="0 0 24 24"
@@ -100,7 +100,7 @@ export const UpvoteIcon = () => {
 export const DownvoteIcon = () => {
   return (
     <svg
-      className="hover:stroke-sky-600"
+      className="cursor-pointer hover:stroke-sky-600"
       width="20"
       height="20"
       viewBox="0 0 24 24"

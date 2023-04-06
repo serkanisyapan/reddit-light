@@ -104,7 +104,7 @@ export const SinglePost = (props: SinglePostProps) => {
         key={post.id}
       >
         <VoteSection {...props} />
-        <div>
+        <div className="w-full">
           <div className="mb-2 flex flex-row items-center justify-between gap-2 text-sm">
             <div className="flex flex-row gap-2">
               <Image
