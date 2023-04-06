@@ -14,10 +14,9 @@ interface SinglePostProps extends PostWithUserInfo {
   isPostPage?: boolean;
 }
 
-export const SinglePost = (props: SinglePostProps) => {
-  const { post, author, isPostPage } = props;
+const PostOptions = (props: SinglePostProps) => {
+  const { post, author } = props;
   const router = useRouter();
-  const { user } = useUser();
   const ctx = api.useContext();
   const { mutate, isLoading: isDeleting } = api.post.deletePost.useMutation({
     onSuccess: () => {
@@ -33,6 +32,44 @@ export const SinglePost = (props: SinglePostProps) => {
       }
     },
   });
+  return (
+    <div className="dropdown-end dropdown">
+      <label
+        onClick={(event) => event.stopPropagation()}
+        tabIndex={0}
+        className="cursor-pointer"
+      >
+        <MoreIcon />
+      </label>
+      <ul
+        tabIndex={0}
+        className="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
+      >
+        <li>
+          <a>
+            <EditIcon />
+            Edit Post
+          </a>
+        </li>
+        <li
+          onClick={(event) => {
+            event.stopPropagation();
+            mutate({ id: post.id, userId: author.id });
+          }}
+        >
+          <a>
+            {isDeleting ? <LoadingSpinner /> : <DeleteIcon />}
+            Delete Post
+          </a>
+        </li>
+      </ul>
+    </div>
+  );
+};
+
+export const SinglePost = (props: SinglePostProps) => {
+  const { post, author, isPostPage } = props;
+  const { user } = useUser();
 
   const isPostAuthor = post.authorId === user?.id;
   if (!isPostPage && post.content.length > 250) {
@@ -66,39 +103,7 @@ export const SinglePost = (props: SinglePostProps) => {
               <span>{`${dayjs(post.createdAt).fromNow()}`}</span>
             </div>
           </div>
-          {isPostAuthor && (
-            <div className="dropdown-end dropdown">
-              <label
-                onClick={(event) => event.stopPropagation()}
-                tabIndex={0}
-                className="cursor-pointer"
-              >
-                <MoreIcon />
-              </label>
-              <ul
-                tabIndex={0}
-                className="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
-              >
-                <li>
-                  <a>
-                    <EditIcon />
-                    Edit Post
-                  </a>
-                </li>
-                <li
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    mutate({ id: post.id, userId: author.id });
-                  }}
-                >
-                  <a>
-                    {isDeleting ? <LoadingSpinner /> : <DeleteIcon />}
-                    Delete Post
-                  </a>
-                </li>
-              </ul>
-            </div>
-          )}
+          {isPostAuthor && <PostOptions {...props} />}
         </div>
         <h3 className="mb-3 text-xl">{post.title}</h3>
         <p className="whitespace-pre-wrap text-base">

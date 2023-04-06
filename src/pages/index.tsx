@@ -47,7 +47,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />
-      <div className="mb-8 md:max-w-2xl">{postContent}</div>
+      <div className="mb-8 md:w-full md:max-w-2xl">{postContent}</div>
     </>
   );
 };
