@@ -6,6 +6,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import type { GetStaticProps, NextPage } from "next";
 import { generateSSGHelper } from "@/utils/ssgHelper";
 import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
 
 type PostInputs = {
   title: string;
@@ -21,6 +22,10 @@ const EditPostPage: NextPage<{ id: string }> = ({ id }) => {
     onSuccess: () => {
       const id = router.query.id as string;
       void router.push(`/post/${id}`);
+      toast.success("Successfully  edited!");
+    },
+    onError: () => {
+      toast.error("Failed to edit! Please try again later.");
     },
   });
   const {

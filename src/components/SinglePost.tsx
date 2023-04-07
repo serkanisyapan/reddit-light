@@ -13,6 +13,7 @@ import {
 import { useUser } from "@clerk/nextjs";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
 dayjs.extend(relativeTime);
 
 type PostWithUserInfo = RouterOutputs["post"]["getAll"][number];
@@ -36,6 +37,10 @@ const PostOptions = (props: SinglePostProps) => {
       if (router.pathname === "/post/[id]") {
         void router.push("/");
       }
+      toast.success("Successfully deleted!");
+    },
+    onError: () => {
+      toast.error("Something went wrong. Try again.");
     },
   });
   return (

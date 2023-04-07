@@ -4,6 +4,7 @@ import { postValidation } from "@/utils/postValidation";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { toast } from "react-hot-toast";
 
 type PostInputs = {
   title: string;
@@ -26,9 +27,16 @@ export default function App() {
   const { mutate, isLoading: isPosting } = api.post.createPost.useMutation({
     onSuccess: () => {
       void router.push("/");
+      toast.success("Successfully created!");
+    },
+    onError: (e) => {
+      if (typeof e === "object") {
+        toast.error("Too many requests! Try again later.");
+      } else {
+        toast.error("Failed to post! Please try again later.");
+      }
     },
   });
-
   const onSubmit: SubmitHandler<PostInputs> = (data) => {
     void mutate({ content: data.content, title: data.title });
   };

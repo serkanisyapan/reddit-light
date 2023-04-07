@@ -112,11 +112,11 @@ export const DownvoteIcon = () => {
       strokeLinejoin="miter"
       transform="matrix(1, 0, 0, -1, 0, 0)"
     >
-      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
       <g
         id="SVGRepo_tracerCarrier"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       ></g>
       <g id="SVGRepo_iconCarrier">
         <polygon points="3 14 12 3 21 14 16 14 16 22 8 22 8 14 3 14"></polygon>
