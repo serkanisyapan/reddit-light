@@ -13,10 +13,14 @@ const ProfileFeed = (props: { userId: string }) => {
 
   if (isLoading) return <SpinnerContainer />;
   if (!data || data.length === 0)
-    return <div>User have not posted yet. Come back later.</div>;
+    return (
+      <div className="flex h-full items-center text-2xl">
+        User does not have any posts.
+      </div>
+    );
 
   return (
-    <div className="mt-5 flex flex-col gap-3 md:max-w-2xl">
+    <div className="mt-5 flex flex-col gap-3 md:w-full md:max-w-2xl">
       {data.map((post) => (
         <SinglePost {...post} key={post.post.id} />
       ))}
