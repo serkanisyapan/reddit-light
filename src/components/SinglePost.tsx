@@ -14,6 +14,7 @@ import { useUser } from "@clerk/nextjs";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
+import type { Vote } from "@prisma/client";
 dayjs.extend(relativeTime);
 
 type PostWithUserInfo = RouterOutputs["post"]["getAll"][number];
@@ -82,11 +83,21 @@ const PostOptions = (props: SinglePostProps) => {
 
 const VoteSection = (props: SinglePostProps) => {
   const { post } = props;
+  const { user } = useUser();
+  const isUserVotedPost = post.votes.find((vote) => vote.userId === user?.id);
+  console.log(isUserVotedPost);
+  const postVoteCount = (postVotes: Vote[]) => {
+    let voteCount = 0;
+    for (const vote of postVotes) {
+      voteCount += vote.value;
+    }
+    return voteCount;
+  };
   return (
     <div className="mr-3 flex flex-col items-center">
-      <UpvoteIcon />
-      <span>{post.upvotes}</span>
-      <DownvoteIcon />
+      <UpvoteIcon voted={isUserVotedPost} />
+      <span>{postVoteCount(post.votes)}</span>
+      <DownvoteIcon voted={isUserVotedPost} />
     </div>
   );
 };
@@ -94,7 +105,6 @@ const VoteSection = (props: SinglePostProps) => {
 export const SinglePost = (props: SinglePostProps) => {
   const { post, author, isPostPage } = props;
   const { user } = useUser();
-
   const isPostAuthor = post.authorId === user?.id;
   if (!isPostPage && post.content.length > 250) {
     post.content = post.content.slice(0, 250) + "...";

@@ -3,12 +3,22 @@ import { postValidation } from "@/utils/postValidation";
 import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import type { Post } from "@prisma/client";
+import type { Vote } from "@prisma/client"
 import { filterUserInfo } from "@/utils/filterUserInfo";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-const addUserDataToPost = async (posts: Post[]) => {
+type PostWithVotes = {
+  id: string;
+  updatedAt: Date;
+  createdAt: Date;
+  title: string;
+  content: string;
+  authorId: string;
+  votes: Vote[]
+}
+
+const addUserDataToPost = async (posts: PostWithVotes[]) => {
     const users = (await clerkClient.users.getUserList({
       userId: posts.map((post) => post.authorId),
       limit: 50,
@@ -42,6 +52,7 @@ const ratelimit = new Ratelimit({
 export const postRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
+      include: {votes: true},
       orderBy: {createdAt: "desc"}, 
       take: 25,
     });
@@ -103,6 +114,7 @@ export const postRouter = createTRPCRouter({
     userId: z.string()
   }))
   .query(async({ ctx, input }) => ctx.prisma.post.findMany({
+    include: {votes: true},
     where: {
       authorId: input.userId
     },
@@ -114,6 +126,7 @@ export const postRouter = createTRPCRouter({
   .input(z.object({id: z.string()}))
   .query(async({ctx, input}) => {
     const post = await ctx.prisma.post.findUnique({
+      include: {votes: true},
       where:{
         id: input.id
       }

@@ -1,23 +1,31 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider     = "mysql"
-    url          = env("DATABASE_URL")
-    relationMode = "prisma"
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model Post {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    title     String   @db.VarChar(255)
-    content   String   @db.Text
-    upvotes   Int      @default(0) @db.Int
-    authorId  String
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String   @db.VarChar(255)
+  content   String   @db.Text
+  authorId  String
+  votes     Vote[]
 
-    @@index([authorId])
+  @@index([authorId])
+}
+
+model Vote {
+  id     String @id @default(cuid())
+  value  Int
+  postId String
+  userId String
+  post   Post   @relation(fields: [postId], references: [id])
+
+  @@index([postId])
 }

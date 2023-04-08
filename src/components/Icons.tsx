@@ -1,3 +1,5 @@
+import type { Vote } from "@prisma/client";
+
 export const PlusIcon = () => {
   return (
     <svg
@@ -78,15 +80,16 @@ export const DeleteIcon = () => {
   );
 };
 
-export const UpvoteIcon = () => {
+export const UpvoteIcon = (props: { voted: Vote | undefined }) => {
   return (
     <svg
-      className="cursor-pointer hover:stroke-primary"
+      className={`cursor-pointer hover:stroke-primary ${
+        props.voted?.value === 1 ? "fill-primary" : ""
+      }`}
       width="20"
       height="20"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
-      fill="none"
       stroke="white"
       strokeWidth="1"
       strokeLinecap="round"
@@ -97,10 +100,12 @@ export const UpvoteIcon = () => {
   );
 };
 
-export const DownvoteIcon = () => {
+export const DownvoteIcon = (props: { voted: Vote | undefined }) => {
   return (
     <svg
-      className="cursor-pointer hover:stroke-sky-600"
+      className={`cursor-pointer hover:stroke-sky-600 ${
+        props.voted?.value === -1 ? "fill-sky-600" : ""
+      }`}
       width="20"
       height="20"
       viewBox="0 0 24 24"
