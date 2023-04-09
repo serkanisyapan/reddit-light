@@ -17,6 +17,11 @@ type PostWithVotes = {
   authorId: string;
   votes: Vote[]
 }
+const voteValidation = z.object({
+  value: z.number(),
+  postId: z.string(),
+  userId: z.string()
+})
 
 const addUserDataToPost = async (posts: PostWithVotes[]) => {
     const users = (await clerkClient.users.getUserList({
@@ -107,6 +112,45 @@ export const postRouter = createTRPCRouter({
       data
     })
     return post
+  }),
+
+  votePost: privateProcedure
+  .input(voteValidation)
+  .mutation(async({ ctx, input }) => {
+    const authorId = ctx.userId 
+    if (input.userId !== authorId) throw new TRPCError({code: "UNAUTHORIZED"})
+
+    // checks if user already voted for that post, if exists delete
+    const previousVote = await ctx.prisma.vote.findFirst({
+      where: {
+       userId: authorId,
+       postId: input.postId 
+      }
+    })
+    const deletePrevVote = async() => {
+      if (!previousVote) return
+      await ctx.prisma.vote.delete({
+        where: {
+          id: previousVote.id
+        }
+      })
+    }
+    if (previousVote) {
+      if (previousVote.value === input.value) {
+        void deletePrevVote()
+        return
+      }
+      void deletePrevVote()
+    }
+
+    const vote = await ctx.prisma.vote.create({
+      data: {
+        value: input.value,
+        postId: input.postId,
+        userId: authorId
+      }
+    })
+    return vote
   }),
 
   getPostsByUserId: publicProcedure

@@ -7,9 +7,12 @@ import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 
 const ProfileFeed = (props: { userId: string }) => {
-  const { data, isLoading } = api.post.getPostsByUserId.useQuery({
-    userId: props.userId,
-  });
+  const { data, isLoading } = api.post.getPostsByUserId.useQuery(
+    {
+      userId: props.userId,
+    },
+    { refetchOnWindowFocus: false }
+  );
 
   if (isLoading) return <SpinnerContainer />;
   if (!data || data.length === 0)
@@ -29,9 +32,12 @@ const ProfileFeed = (props: { userId: string }) => {
 };
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
-  const { data } = api.profile.getUserProfile.useQuery({
-    username,
-  });
+  const { data } = api.profile.getUserProfile.useQuery(
+    {
+      username,
+    },
+    { refetchOnWindowFocus: false }
+  );
 
   if (!data) return <div>404</div>;
 

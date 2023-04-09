@@ -1,5 +1,3 @@
-import type { Vote } from "@prisma/client";
-
 export const PlusIcon = () => {
   return (
     <svg
@@ -80,11 +78,26 @@ export const DeleteIcon = () => {
   );
 };
 
-export const UpvoteIcon = (props: { voted: Vote | undefined }) => {
+interface VoteProps {
+  isVoting: boolean;
+  isVoted: { voted: boolean; value: number };
+  handlePostVote: (voteType: string) => void;
+}
+
+export const UpvoteIcon = ({
+  isVoting,
+  handlePostVote,
+  isVoted,
+}: VoteProps) => {
   return (
     <svg
+      onClick={(event) => {
+        event.stopPropagation();
+        if (isVoting) return;
+        handlePostVote("upvote");
+      }}
       className={`cursor-pointer hover:stroke-primary ${
-        props.voted?.value === 1 ? "fill-primary" : ""
+        isVoted.value === 1 ? "fill-primary" : ""
       }`}
       width="20"
       height="20"
@@ -100,11 +113,20 @@ export const UpvoteIcon = (props: { voted: Vote | undefined }) => {
   );
 };
 
-export const DownvoteIcon = (props: { voted: Vote | undefined }) => {
+export const DownvoteIcon = ({
+  isVoting,
+  handlePostVote,
+  isVoted,
+}: VoteProps) => {
   return (
     <svg
+      onClick={(event) => {
+        event.stopPropagation();
+        if (isVoting) return;
+        handlePostVote("downvote");
+      }}
       className={`cursor-pointer hover:stroke-sky-600 ${
-        props.voted?.value === -1 ? "fill-sky-600" : ""
+        isVoted.value === -1 ? "fill-sky-600" : ""
       }`}
       width="20"
       height="20"

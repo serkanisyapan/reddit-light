@@ -9,7 +9,10 @@ import { useUser } from "@clerk/nextjs";
 import { SinglePost } from "@/components/SinglePost";
 
 const Home: NextPage = () => {
-  const { data, isLoading: isPostsLoading } = api.post.getAll.useQuery();
+  const { data, isLoading: isPostsLoading } = api.post.getAll.useQuery(
+    undefined,
+    { refetchOnWindowFocus: false }
+  );
   const { isSignedIn } = useUser();
   let postContent;
 

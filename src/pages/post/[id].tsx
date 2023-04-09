@@ -6,9 +6,12 @@ import { SinglePost } from "@/components/SinglePost";
 import { Navbar } from "@/components/Navbar";
 
 const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
-  const { data } = api.post.getPostById.useQuery({
-    id,
-  });
+  const { data } = api.post.getPostById.useQuery(
+    {
+      id,
+    },
+    { refetchOnWindowFocus: false }
+  );
   if (!data) return <div>404</div>;
 
   return (

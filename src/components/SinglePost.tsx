@@ -14,7 +14,7 @@ import { useUser } from "@clerk/nextjs";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
-import type { Vote } from "@prisma/client";
+import { useEffect, useState } from "react";
 dayjs.extend(relativeTime);
 
 type PostWithUserInfo = RouterOutputs["post"]["getAll"][number];
@@ -82,22 +82,68 @@ const PostOptions = (props: SinglePostProps) => {
 };
 
 const VoteSection = (props: SinglePostProps) => {
+  const [voteCount, setVoteCount] = useState(0);
+  const [isVoted, setIsVoted] = useState({ voted: false, value: 0 });
   const { post } = props;
+  const { mutate, isLoading: isVoting } = api.post.votePost.useMutation({
+    onMutate: (context) => {
+      if (isVoted.voted && isVoted.value === context.value) {
+        if (context.value === 1) {
+          setVoteCount((prev) => prev - 1);
+        } else {
+          setVoteCount((prev) => prev + 1);
+        }
+        setIsVoted({ voted: false, value: 0 });
+      } else {
+        setIsVoted({ voted: true, value: context.value });
+        setVoteCount((prev) => prev + context.value);
+      }
+    },
+  });
   const { user } = useUser();
-  const isUserVotedPost = post.votes.find((vote) => vote.userId === user?.id);
-  console.log(isUserVotedPost);
-  const postVoteCount = (postVotes: Vote[]) => {
+
+  const isUserVotedPost = () => {
+    const findVote = post.votes.find((vote) => vote.userId === user?.id);
+    if (!findVote) return;
+    setIsVoted({ voted: findVote ? true : false, value: findVote.value });
+  };
+  const postVoteCount = () => {
     let voteCount = 0;
-    for (const vote of postVotes) {
+    for (const vote of post.votes) {
       voteCount += vote.value;
     }
+    setVoteCount(voteCount);
     return voteCount;
   };
+
+  const handlePostVote = (voteType: string) => {
+    if (!user) return;
+    mutate({
+      value: voteType === "upvote" ? 1 : -1,
+      postId: post.id,
+      userId: user?.id,
+    });
+  };
+
+  useEffect(() => {
+    postVoteCount();
+    isUserVotedPost();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="mr-3 flex flex-col items-center">
-      <UpvoteIcon voted={isUserVotedPost} />
-      <span>{postVoteCount(post.votes)}</span>
-      <DownvoteIcon voted={isUserVotedPost} />
+      <UpvoteIcon
+        isVoting={isVoting}
+        isVoted={isVoted}
+        handlePostVote={handlePostVote}
+      />
+      <span>{voteCount}</span>
+      <DownvoteIcon
+        isVoting={isVoting}
+        isVoted={isVoted}
+        handlePostVote={handlePostVote}
+      />
     </div>
   );
 };
