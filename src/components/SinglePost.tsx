@@ -85,6 +85,7 @@ const VoteSection = (props: SinglePostProps) => {
   const [voteCount, setVoteCount] = useState(0);
   const [isVoted, setIsVoted] = useState({ voted: false, value: 0 });
   const { post } = props;
+  const ctx = api.useContext();
   const { mutate, isLoading: isVoting } = api.post.votePost.useMutation({
     onMutate: (context) => {
       if (isVoted.voted && isVoted.value === context.value) {
@@ -99,22 +100,11 @@ const VoteSection = (props: SinglePostProps) => {
         setVoteCount((prev) => prev + context.value);
       }
     },
+    onSuccess: () => {
+      void ctx.post.getAll.invalidate();
+    },
   });
   const { user } = useUser();
-
-  const isUserVotedPost = () => {
-    const findVote = post.votes.find((vote) => vote.userId === user?.id);
-    if (!findVote) return;
-    setIsVoted({ voted: findVote ? true : false, value: findVote.value });
-  };
-  const postVoteCount = () => {
-    let voteCount = 0;
-    for (const vote of post.votes) {
-      voteCount += vote.value;
-    }
-    setVoteCount(voteCount);
-    return voteCount;
-  };
 
   const handlePostVote = (voteType: string) => {
     if (!user) return;
@@ -126,10 +116,22 @@ const VoteSection = (props: SinglePostProps) => {
   };
 
   useEffect(() => {
+    const isUserVotedPost = () => {
+      const findVote = post.votes.find((vote) => vote.userId === user?.id);
+      if (!findVote) return;
+      setIsVoted({ voted: findVote ? true : false, value: findVote.value });
+    };
+    const postVoteCount = () => {
+      let voteCount = 0;
+      for (const vote of post.votes) {
+        voteCount += vote.value;
+      }
+      setVoteCount(voteCount);
+      return voteCount;
+    };
     postVoteCount();
     isUserVotedPost();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [post.votes, user?.id]);
 
   return (
     <div className="mr-3 flex flex-col items-center">
