@@ -158,18 +158,37 @@ export const postRouter = createTRPCRouter({
     return vote
   }),
 
-  getPostsByUserId: publicProcedure
+  getUserFeed: publicProcedure
   .input(z.object({
-    userId: z.string()
+    userId: z.string(),
+    feed: z.string()
   }))
-  .query(async({ ctx, input }) => ctx.prisma.post.findMany({
-    include: {votes: true},
-    where: {
-      authorId: input.userId
-    },
-    take: 25,
-    orderBy: {createdAt: "desc"}
-  }).then(addUserDataToPost)),
+  .query(async({ ctx, input }) =>{
+    if (input.feed === "upvoted" || input.feed === "downvoted") {
+      const getUpvotedPosts = await ctx.prisma.post.findMany({
+        where: {
+          votes: {
+            some: {
+              userId: input.userId,
+              value: input.feed === "upvoted" ? 1 : -1
+            }
+          }
+        },
+        include: {votes:true}
+      })
+      return (await addUserDataToPost(getUpvotedPosts))
+    } else {
+      const posts = await ctx.prisma.post.findMany({
+        include: {votes:true},
+        where: {
+          authorId: input.userId
+        },
+        take: 25,
+        orderBy: {createdAt: "desc"}
+      })
+      return (await addUserDataToPost(posts))
+    }
+  }),
 
   getPostById: publicProcedure
   .input(z.object({id: z.string()}))

@@ -33,7 +33,7 @@ const PostOptions = (props: SinglePostProps) => {
         void ctx.post.getAll.invalidate();
       }
       if (router.pathname === "/user/[slug]") {
-        void ctx.post.getPostsByUserId.invalidate();
+        void ctx.post.getUserFeed.invalidate();
       }
       if (router.pathname === "/post/[id]") {
         void router.push("/");

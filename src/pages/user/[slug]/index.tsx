@@ -1,35 +1,10 @@
-import { SpinnerContainer } from "@/components/LoadingSpinner";
 import { Navbar } from "@/components/Navbar";
-import { SinglePost } from "@/components/SinglePost";
+import { ProfileFeed } from "@/components/ProfileFeed";
+import { ProfileFeedQuery } from "@/components/ProfileFeedQuery";
 import { api } from "@/utils/api";
 import { generateSSGHelper } from "@/utils/ssgHelper";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-
-const ProfileFeed = (props: { userId: string }) => {
-  const { data, isLoading } = api.post.getPostsByUserId.useQuery(
-    {
-      userId: props.userId,
-    },
-    { refetchOnWindowFocus: false }
-  );
-
-  if (isLoading) return <SpinnerContainer />;
-  if (!data || data.length === 0)
-    return (
-      <div className="flex h-full items-center text-2xl">
-        User does not have any posts.
-      </div>
-    );
-
-  return (
-    <div className="mt-5 flex flex-col gap-3 md:w-full md:max-w-2xl">
-      {data.map((post) => (
-        <SinglePost {...post} key={post.post.id} />
-      ))}
-    </div>
-  );
-};
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data } = api.profile.getUserProfile.useQuery(
@@ -38,7 +13,6 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     },
     { refetchOnWindowFocus: false }
   );
-
   if (!data) return <div>404</div>;
 
   return (
@@ -49,7 +23,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />
-      <ProfileFeed userId={data.id} />
+      <ProfileFeedQuery username={username} />
+      <ProfileFeed userId={data.id} feed="posts" />
     </>
   );
 };
