@@ -1,6 +1,7 @@
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
+import { PlusIcon } from "./Icons";
 
 export const Navbar = () => {
   const { user, isSignedIn } = useUser();
@@ -15,6 +16,11 @@ export const Navbar = () => {
   } else {
     userContent = (
       <div className="flex flex-row items-center gap-2 transition">
+        <div className="tooltip tooltip-bottom mr-2" data-tip="Create Post">
+          <Link href="/create-post">
+            <PlusIcon />
+          </Link>
+        </div>
         <span>{user.username}</span>
         <div className="dropdown-end dropdown">
           <label tabIndex={0} className="btn-ghost btn-circle avatar btn">

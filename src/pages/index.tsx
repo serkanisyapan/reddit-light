@@ -3,9 +3,6 @@ import Head from "next/head";
 import { api } from "@/utils/api";
 import { Navbar } from "@/components/Navbar";
 import { SpinnerContainer } from "@/components/LoadingSpinner";
-import Link from "next/link";
-import { PlusIcon } from "@/components/Icons";
-import { useUser } from "@clerk/nextjs";
 import { SinglePost } from "@/components/SinglePost";
 
 const Home: NextPage = () => {
@@ -13,7 +10,6 @@ const Home: NextPage = () => {
     undefined,
     { refetchOnWindowFocus: false }
   );
-  const { isSignedIn } = useUser();
   let postContent;
 
   if (isPostsLoading) {
@@ -24,22 +20,11 @@ const Home: NextPage = () => {
 
   if (data) {
     postContent = (
-      <>
-        <div className="mt-5 flex flex-col gap-3">
-          {data.map((post) => (
-            <SinglePost {...post} key={post.post.id} />
-          ))}
-        </div>
-        {isSignedIn && (
-          <Link
-            href="/create-post"
-            className="btn-primary btn fixed bottom-8 right-5 gap-1 rounded-full"
-          >
-            <PlusIcon />
-            Create Post
-          </Link>
-        )}
-      </>
+      <div className="mt-5 flex flex-col gap-3">
+        {data.map((post) => (
+          <SinglePost {...post} key={post.post.id} />
+        ))}
+      </div>
     );
   }
   return (
