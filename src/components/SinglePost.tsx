@@ -167,7 +167,7 @@ export const SinglePost = (props: SinglePostProps) => {
         key={post.id}
       >
         <VoteSection {...props} />
-        <div className="w-full">
+        <div className="w-full max-w-[95%]">
           <div className="mb-2 flex flex-row items-center justify-between gap-2 text-sm">
             <div className="flex flex-row gap-2">
               <Image
@@ -189,8 +189,8 @@ export const SinglePost = (props: SinglePostProps) => {
             </div>
             {isPostAuthor && <PostOptions {...props} />}
           </div>
-          <h3 className="mb-3 text-xl">{post.title}</h3>
-          <p className="whitespace-pre-wrap text-base">
+          <h3 className="mb-3 break-words text-xl">{post.title}</h3>
+          <p className="whitespace-pre-wrap break-words text-base">
             {post.content}
             {!isPostPage && post.content.length > 250 && (
               <Link
