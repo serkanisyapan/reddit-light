@@ -23,9 +23,12 @@ const FeedPage: NextPage<{ feed: string; username: string }> = ({
     return (
       <div className="flex h-full w-full flex-col items-center">
         <Navbar />
-        <div className="flex h-full items-center justify-center">
+        <div className="mt-52 flex flex-col items-center justify-center">
           <span className="flex flex-col items-center gap-2">
             <AlertIcon /> You do not have permission to access this page.
+          </span>
+          <span className="text-white text-opacity-60">
+            You can only see your own votes.
           </span>
         </div>
       </div>

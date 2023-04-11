@@ -26,7 +26,7 @@ export const LoadingSpinner = (props: { size?: number }) => {
 
 export const SpinnerContainer = () => {
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="mt-52 flex items-center justify-center">
       <LoadingSpinner size={52} />
     </div>
   );

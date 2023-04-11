@@ -14,7 +14,7 @@ export const Navbar = () => {
     );
   } else {
     userContent = (
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row items-center gap-2 transition">
         <span>{user.username}</span>
         <div className="dropdown-end dropdown">
           <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
@@ -43,7 +43,7 @@ export const Navbar = () => {
   }
 
   return (
-    <div className="navbar bg-primary text-primary-content">
+    <div className="navbar min-h-[70px] bg-primary text-primary-content">
       <div className="flex-1">
         <Link href="/" className="btn-ghost btn text-xl normal-case">
           Reddit Light

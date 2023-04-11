@@ -14,7 +14,7 @@ export const ProfileFeed = (props: { userId: string; feed: string }) => {
   if (isLoading) return <SpinnerContainer />;
   if (!data || data.length === 0)
     return (
-      <div className="flex h-full items-center text-2xl">
+      <div className="mt-52 items-center text-2xl">
         User does not have any posts.
       </div>
     );
