@@ -20,7 +20,7 @@ export const ProfileFeed = (props: { userId: string; feed: string }) => {
     );
 
   return (
-    <div className="mt-5 flex flex-col gap-3 md:w-full md:max-w-2xl">
+    <div className="mb-8 mt-5 flex flex-col gap-3 md:w-full md:max-w-2xl">
       {data.map((post) => (
         <SinglePost {...post} key={post.post.id} />
       ))}

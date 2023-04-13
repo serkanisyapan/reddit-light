@@ -7,7 +7,6 @@ export const ProfileFeedQuery = (props: { username: string }) => {
   const { user } = useUser();
   const router = useRouter();
   if (!user || user.username !== props.username) return <div />;
-  console.log(router.query.feed);
   return (
     <>
       <div className="tabs">
