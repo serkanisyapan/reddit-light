@@ -6,6 +6,7 @@ import { LoadingSpinner, SpinnerContainer } from "@/components/LoadingSpinner";
 import { SinglePost } from "@/components/SinglePost";
 import useScrollPosition from "@/hooks/useScrollPosition";
 import { useEffect } from "react";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const Home: NextPage = () => {
   const {
@@ -23,7 +24,7 @@ const Home: NextPage = () => {
       refetchOnWindowFocus: false,
     }
   );
-  const scrollPosition = useScrollPosition();
+  const { scrollPosition } = useScrollPosition();
 
   let postContent;
   if (isPostsLoading) {
@@ -44,6 +45,7 @@ const Home: NextPage = () => {
             <LoadingSpinner />
           </div>
         )}
+        <ScrollToTop />
       </div>
     );
   }

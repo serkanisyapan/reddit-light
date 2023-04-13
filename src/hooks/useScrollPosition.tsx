@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 
 export default function useScrollPosition() {
   const [scrollPosition, setScrollPosition] = useState(false);
+  const [scrollTop, setScrollTop] = useState(0);
 
   const handleScroll = () => {
+    const getUserScrollTop = document.documentElement.scrollTop;
+    setScrollTop(getUserScrollTop);
     if (
       window.innerHeight + document.documentElement.scrollTop + 1 >=
       document.documentElement.scrollHeight
@@ -23,5 +26,5 @@ export default function useScrollPosition() {
     };
   }, []);
 
-  return scrollPosition;
+  return { scrollPosition, scrollTop };
 }
