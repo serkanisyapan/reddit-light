@@ -57,12 +57,12 @@ const ratelimit = new Ratelimit({
 export const postRouter = createTRPCRouter({
   getAll: publicProcedure
   .input(z.object({
-    limit: z.number().min(1).max(25).nullish(),
+    limit: z.number().min(1).max(15).nullish(),
     cursor: z.string().nullish()
   }))
   .query(async ({ ctx, input }) => {
     const { cursor } = input
-    const limit = input.limit ?? 25
+    const limit = input.limit ?? 15
     const posts = await ctx.prisma.post.findMany({
       include: {votes: true},
       orderBy: {createdAt: "desc"}, 
@@ -175,11 +175,16 @@ export const postRouter = createTRPCRouter({
   getUserFeed: publicProcedure
   .input(z.object({
     userId: z.string(),
-    feed: z.string()
+    feed: z.string(),
+    limit: z.number().min(1).max(20).nullish(),
+    cursor: z.string().nullish()
   }))
   .query(async({ ctx, input }) =>{
+    const { cursor } = input;
+    const limit = input.limit ?? 20
+    let getPosts;
     if (input.feed === "upvoted" || input.feed === "downvoted") {
-      const getUpvotedPosts = await ctx.prisma.post.findMany({
+      getPosts = await ctx.prisma.post.findMany({
         where: {
           votes: {
             some: {
@@ -188,20 +193,31 @@ export const postRouter = createTRPCRouter({
             }
           }
         },
-        include: {votes:true}
+        orderBy: {
+          createdAt: "desc"
+        },
+        include: {votes:true},
+        take: limit + 1,
+        cursor: cursor ? {id: cursor} : undefined
       })
-      return (await addUserDataToPost(getUpvotedPosts))
     } else {
-      const posts = await ctx.prisma.post.findMany({
+      getPosts = await ctx.prisma.post.findMany({
         include: {votes:true},
         where: {
           authorId: input.userId
         },
-        take: 25,
-        orderBy: {createdAt: "desc"}
+        orderBy: {createdAt: "desc"},
+        take: limit + 1,
+        cursor: cursor ? {id: cursor} : undefined
       })
-      return (await addUserDataToPost(posts))
     }
+    let nextCursor: typeof cursor | undefined = undefined;
+    if (getPosts.length > limit) {
+      const nextPost = getPosts.pop() as typeof getPosts[number]
+      nextCursor = nextPost.id
+    }
+    const userFeedPosts = await addUserDataToPost(getPosts)
+    return {posts: userFeedPosts, nextCursor}
   }),
 
   getPostById: publicProcedure
