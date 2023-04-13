@@ -17,7 +17,7 @@ import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 dayjs.extend(relativeTime);
 
-type PostWithUserInfo = RouterOutputs["post"]["getAll"][number];
+type PostWithUserInfo = RouterOutputs["post"]["getAll"]["posts"][number];
 interface SinglePostProps extends PostWithUserInfo {
   isPostPage?: boolean;
 }
