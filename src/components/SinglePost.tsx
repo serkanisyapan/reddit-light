@@ -159,7 +159,7 @@ export const SinglePost = (props: SinglePostProps) => {
   }
 
   return (
-    <Link href={`/post/${post.id}`}>
+    <Link href={`/post/${post.id}`} legacyBehavior>
       <div
         className={`box-border flex rounded-md border-[1px] border-neutral bg-neutral-focus p-4 ${
           isPostPage ? "" : "cursor-pointer hover:border-white"
