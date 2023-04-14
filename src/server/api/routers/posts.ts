@@ -3,12 +3,13 @@ import { postValidation } from "@/utils/postValidation";
 import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import type { Vote } from "@prisma/client"
+import type { Vote, Comment } from "@prisma/client"
 import { filterUserInfo } from "@/utils/filterUserInfo";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import type { User } from "@clerk/nextjs/dist/api";
 
-type PostWithVotes = {
+type PostTypes= {
   id: string;
   updatedAt: Date;
   createdAt: Date;
@@ -16,17 +17,24 @@ type PostWithVotes = {
   content: string;
   authorId: string;
   votes: Vote[]
+  comments: Comment[]
 }
 const voteValidation = z.object({
   value: z.number(),
   postId: z.string(),
   userId: z.string()
 })
+const commentValidation = z.object({
+  comment: z.string().min(1, "Comment must be at least 1 character."),
+  postId: z.string(),
+  userId: z.string()
+})
 
-const addUserDataToPost = async (posts: PostWithVotes[]) => {
+
+const addUserDataToPost = async (posts: PostTypes[]) => {
     const users = (await clerkClient.users.getUserList({
       userId: posts.map((post) => post.authorId),
-      limit: 50,
+      limit: 25,
     })).map(filterUserInfo)
 
     return posts.map((post) => {
@@ -47,12 +55,18 @@ const addUserDataToPost = async (posts: PostWithVotes[]) => {
 })}
 
 // Create a new ratelimiter, that allows 1 requests per 1 minutes
-const ratelimit = new Ratelimit({
+const rateLimitPost = new Ratelimit({
   redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(1, "1 m"),
   analytics: true,
   prefix: "@upstash/ratelimit",
 });
+const rateLimitComment = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(3, "1 m"),
+  analytics: true,
+  prefix: "@upstash/ratelimit",
+})
 
 export const postRouter = createTRPCRouter({
   getAll: publicProcedure
@@ -64,7 +78,7 @@ export const postRouter = createTRPCRouter({
     const { cursor } = input
     const limit = input.limit ?? 15
     const posts = await ctx.prisma.post.findMany({
-      include: {votes: true},
+      include: {votes: true, comments: true},
       orderBy: {createdAt: "desc"}, 
       take: limit + 1,
       cursor: cursor ? {id: cursor} : undefined,
@@ -80,7 +94,7 @@ export const postRouter = createTRPCRouter({
 
   createPost: privateProcedure.input(postValidation).mutation(async ({ ctx, input }) => {
     const authorId = ctx.userId;
-    const { success } = await ratelimit.limit(authorId)
+    const { success } = await rateLimitPost.limit(authorId)
     if (!success) throw new TRPCError({code: "TOO_MANY_REQUESTS"})
 
     const post = await ctx.prisma.post.create({
@@ -91,6 +105,32 @@ export const postRouter = createTRPCRouter({
       }
     });
     return post;
+  }),
+
+  commentPost: privateProcedure
+  .input(commentValidation)
+  .mutation(async({ ctx, input }) => {
+    const user:User = (await clerkClient.users.getUser(input.userId))
+    if (!user || !user.username) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Comment author not found.'
+      })
+    }
+    const authorId = ctx.userId;
+    const { success } = await rateLimitComment.limit(authorId)
+    if (!success) throw new TRPCError({code: "TOO_MANY_REQUESTS"})
+    if (input.userId !== authorId) throw new TRPCError({code: "UNAUTHORIZED"})
+    const comment = await ctx.prisma.comment.create({
+      data: {
+        comment: input.comment,
+        postId: input.postId,
+        userId: authorId,
+        username: user.username,
+        picture: user.profileImageUrl
+      }
+    })
+    return comment
   }),
 
   deletePost: privateProcedure
@@ -191,13 +231,13 @@ export const postRouter = createTRPCRouter({
         orderBy: {
           createdAt: "desc"
         },
-        include: {votes:true},
+        include: {votes:true, comments: true},
         take: limit + 1,
         cursor: cursor ? {id: cursor} : undefined
       })
     } else {
       getPosts = await ctx.prisma.post.findMany({
-        include: {votes:true},
+        include: {votes:true, comments: true},
         where: {
           authorId: input.userId
         },
@@ -219,7 +259,7 @@ export const postRouter = createTRPCRouter({
   .input(z.object({id: z.string()}))
   .query(async({ctx, input}) => {
     const post = await ctx.prisma.post.findUnique({
-      include: {votes: true},
+      include: {votes: true, comments: true},
       where:{
         id: input.id
       }
