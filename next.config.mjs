@@ -10,6 +10,9 @@ const config = {
   images: {
     domains: ["images.clerk.dev"]
   },
+  experimental: {
+    scrollRestoration: true
+  },
 
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you
@@ -27,6 +30,6 @@ const config = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  swcMinify: true
+  swcMinify: true,
 };
 export default config;
