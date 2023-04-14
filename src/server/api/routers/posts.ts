@@ -98,11 +98,6 @@ export const postRouter = createTRPCRouter({
   .mutation(async({ ctx, input }) => {
     const authorId = ctx.userId
     if (input.userId !== authorId) throw new TRPCError({code: "UNAUTHORIZED"})
-    await ctx.prisma.vote.deleteMany({
-      where: {
-        postId: input.id
-      }
-    })
     const post = await ctx.prisma.post.delete({
       where: {
         id: input.id

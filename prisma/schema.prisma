@@ -9,13 +9,14 @@ datasource db {
 }
 
 model Post {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String   @db.Text
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  title     String    @db.VarChar(255)
+  content   String    @db.Text
   authorId  String
   votes     Vote[]
+  comments  Comment[]
 
   @@index([authorId])
 }
@@ -25,7 +26,17 @@ model Vote {
   value  Int
   postId String
   userId String
-  post   Post   @relation(fields: [postId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+}
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  comment String
+  postId  String
+  userId  String
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@index([postId])
 }
