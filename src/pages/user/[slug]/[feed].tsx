@@ -2,6 +2,7 @@ import { AlertIcon } from "@/components/Icons";
 import { Navbar } from "@/components/Navbar";
 import { ProfileFeed } from "@/components/ProfileFeed";
 import { ProfileFeedQuery } from "@/components/ProfileFeedQuery";
+import ScrollToTop from "@/components/ScrollToTop";
 import { api } from "@/utils/api";
 import { generateSSGHelper } from "@/utils/ssgHelper";
 import { useUser } from "@clerk/nextjs";
@@ -46,6 +47,7 @@ const FeedPage: NextPage<{ feed: string; username: string }> = ({
       <Navbar />
       <ProfileFeedQuery username={username} />
       <ProfileFeed userId={data.id} feed={feed} />
+      <ScrollToTop />
     </>
   );
 };

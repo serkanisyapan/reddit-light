@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { ProfileFeed } from "@/components/ProfileFeed";
 import { ProfileFeedQuery } from "@/components/ProfileFeedQuery";
+import ScrollToTop from "@/components/ScrollToTop";
 import { api } from "@/utils/api";
 import { generateSSGHelper } from "@/utils/ssgHelper";
 import type { GetStaticProps, NextPage } from "next";
@@ -25,6 +26,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
       <Navbar />
       <ProfileFeedQuery username={username} />
       <ProfileFeed userId={data.id} feed="posts" />
+      <ScrollToTop />
     </>
   );
 };
