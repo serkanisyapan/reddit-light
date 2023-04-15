@@ -22,6 +22,64 @@ interface SinglePostProps extends PostWithUserInfo {
   isPostPage?: boolean;
 }
 
+export const SinglePost = (props: SinglePostProps) => {
+  const { post, author, isPostPage } = props;
+  const { user } = useUser();
+  const isPostAuthor = post.authorId === user?.id;
+  if (!isPostPage && post.content.length > 250) {
+    post.content = post.content.slice(0, 250) + "...";
+  }
+
+  return (
+    <Link href={`/post/${post.id}`} legacyBehavior>
+      <div
+        className={`box-border flex rounded-md border-[1px] border-neutral bg-neutral-focus p-4 ${
+          isPostPage ? "" : "cursor-pointer hover:border-white"
+        }`}
+        key={post.id}
+      >
+        <VoteSection {...props} />
+        <div className="w-full max-w-[95%]">
+          <div className="mb-2 flex flex-row items-center justify-between gap-2 text-sm">
+            <div className="flex flex-row gap-2">
+              <Image
+                className="rounded-full "
+                src={`${author.profilePicture}`}
+                alt="profile picture"
+                width={24}
+                height={24}
+              />
+              <div className="flex items-center gap-2 text-slate-500">
+                <Link href={`/user/${author.username}`}>
+                  <span className="text-white hover:cursor-pointer hover:underline">
+                    u/{author.username}
+                  </span>
+                </Link>
+                <span>-</span>
+                <span>{`${dayjs(post.createdAt).fromNow()}`}</span>
+              </div>
+            </div>
+            {isPostAuthor && <PostOptions {...props} />}
+          </div>
+          <h3 className="mb-3 break-words text-xl">{post.title}</h3>
+          <p className="whitespace-pre-wrap break-words text-base">
+            {post.content}
+            {!isPostPage && post.content.length > 250 && (
+              <Link
+                className="ml-2 cursor-pointer text-primary hover:underline"
+                href={`/post/${post.id}`}
+              >
+                Read More
+              </Link>
+            )}
+          </p>
+          {isPostPage && <CommentForm {...props} />}
+        </div>
+      </div>
+    </Link>
+  );
+};
+
 const PostOptions = (props: SinglePostProps) => {
   const { post, author } = props;
   const router = useRouter();
@@ -150,59 +208,65 @@ const VoteSection = (props: SinglePostProps) => {
   );
 };
 
-export const SinglePost = (props: SinglePostProps) => {
-  const { post, author, isPostPage } = props;
+const CommentForm = (props: SinglePostProps) => {
+  const [commentText, setCommentText] = useState("");
+  const [commentError, setCommentError] = useState("");
+  const { post } = props;
   const { user } = useUser();
-  const isPostAuthor = post.authorId === user?.id;
-  if (!isPostPage && post.content.length > 250) {
-    post.content = post.content.slice(0, 250) + "...";
-  }
+  const ctx = api.useContext();
+  const { mutate, isLoading: isCommenting } = api.post.commentPost.useMutation({
+    onSuccess: () => {
+      setCommentText("");
+      toast.success("Comment submitted!");
+      void ctx.post.getPostById.invalidate();
+    },
+    onError: (e) => {
+      if (typeof e === "object") {
+        toast.error("Too many requests! Try again later.");
+      } else {
+        toast.error("Failed to comment! Please try again later.");
+      }
+    },
+  });
+
+  const handleComment = (text: string) => {
+    if (!user) throw new Error("UNAUTHORIZED");
+    void mutate({ comment: text, postId: post.id, userId: user.id });
+  };
 
   return (
-    <Link href={`/post/${post.id}`} legacyBehavior>
-      <div
-        className={`box-border flex rounded-md border-[1px] border-neutral bg-neutral-focus p-4 ${
-          isPostPage ? "" : "cursor-pointer hover:border-white"
-        }`}
-        key={post.id}
-      >
-        <VoteSection {...props} />
-        <div className="w-full max-w-[95%]">
-          <div className="mb-2 flex flex-row items-center justify-between gap-2 text-sm">
-            <div className="flex flex-row gap-2">
-              <Image
-                className="rounded-full "
-                src={`${author.profilePicture}`}
-                alt="profile picture"
-                width={24}
-                height={24}
-              />
-              <div className="flex items-center gap-2 text-slate-500">
-                <Link href={`/user/${author.username}`}>
-                  <span className="text-white hover:cursor-pointer hover:underline">
-                    u/{author.username}
-                  </span>
-                </Link>
-                <span>-</span>
-                <span>{`${dayjs(post.createdAt).fromNow()}`}</span>
-              </div>
-            </div>
-            {isPostAuthor && <PostOptions {...props} />}
-          </div>
-          <h3 className="mb-3 break-words text-xl">{post.title}</h3>
-          <p className="whitespace-pre-wrap break-words text-base">
-            {post.content}
-            {!isPostPage && post.content.length > 250 && (
-              <Link
-                className="ml-2 cursor-pointer text-primary hover:underline"
-                href={`/post/${post.id}`}
-              >
-                Read More
-              </Link>
-            )}
-          </p>
-        </div>
+    <form className="mt-10 flex flex-col items-end justify-end">
+      <textarea
+        disabled={isCommenting}
+        onChange={(event) => setCommentText(event.target.value)}
+        value={commentText}
+        placeholder="Leave a comment..."
+        className={`textarea-bordered textarea textarea-md w-full ${
+          commentError ? "textarea-error" : ""
+        }
+        `}
+      />
+      <div className="w-full text-slate-400">
+        {commentError && <span>{commentError}</span>}
       </div>
-    </Link>
+      <button
+        onClick={(event) => {
+          event.preventDefault();
+          if (commentText.trim().length > 0) {
+            handleComment(commentText);
+          } else {
+            setCommentError("Comment must be at least 1 character(s)");
+            setTimeout(() => {
+              setCommentError("");
+            }, 1500);
+          }
+        }}
+        disabled={isCommenting}
+        className="btn-primary btn-sm btn mt-3 w-28"
+        type="submit"
+      >
+        {isCommenting ? <LoadingSpinner /> : "Comment"}
+      </button>
+    </form>
   );
 };
