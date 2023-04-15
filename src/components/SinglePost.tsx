@@ -15,6 +15,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
+import PostComment from "./PostComment";
 dayjs.extend(relativeTime);
 
 type PostWithUserInfo = RouterOutputs["post"]["getAll"]["posts"][number];
@@ -73,7 +74,16 @@ export const SinglePost = (props: SinglePostProps) => {
               </Link>
             )}
           </p>
-          {isPostPage && <CommentForm {...props} />}
+          {isPostPage && (
+            <>
+              <CommentForm postId={post.id} />
+              <div className="mb-5 mt-10 flex flex-col gap-8">
+                {post.comments.map((comment) => (
+                  <PostComment key={comment.id} {...comment} />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </Link>
@@ -208,10 +218,9 @@ const VoteSection = (props: SinglePostProps) => {
   );
 };
 
-const CommentForm = (props: SinglePostProps) => {
+const CommentForm = (props: { postId: string }) => {
   const [commentText, setCommentText] = useState("");
   const [commentError, setCommentError] = useState("");
-  const { post } = props;
   const { user } = useUser();
   const ctx = api.useContext();
   const { mutate, isLoading: isCommenting } = api.post.commentPost.useMutation({
@@ -231,7 +240,7 @@ const CommentForm = (props: SinglePostProps) => {
 
   const handleComment = (text: string) => {
     if (!user) throw new Error("UNAUTHORIZED");
-    void mutate({ comment: text, postId: post.id, userId: user.id });
+    void mutate({ comment: text, postId: props.postId, userId: user.id });
   };
 
   return (
@@ -241,7 +250,7 @@ const CommentForm = (props: SinglePostProps) => {
         onChange={(event) => setCommentText(event.target.value)}
         value={commentText}
         placeholder="Leave a comment..."
-        className={`textarea-bordered textarea textarea-md w-full ${
+        className={`textarea-bordered textarea textarea-md w-full overflow-auto ${
           commentError ? "textarea-error" : ""
         }
         `}
