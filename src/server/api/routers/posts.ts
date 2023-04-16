@@ -217,7 +217,7 @@ export const postRouter = createTRPCRouter({
   .query(async({ ctx, input }) =>{
     const { cursor } = input;
     const limit = input.limit ?? 20
-    let getPosts;
+    let getPosts: PostTypes[];
     if (input.feed === "upvoted" || input.feed === "downvoted") {
       getPosts = await ctx.prisma.post.findMany({
         where: {
@@ -226,12 +226,26 @@ export const postRouter = createTRPCRouter({
               userId: input.userId,
               value: input.feed === "upvoted" ? 1 : -1
             }
-          }
+          },
         },
         orderBy: {
           createdAt: "desc"
         },
         include: {votes:true, comments: true},
+        take: limit + 1,
+        cursor: cursor ? {id: cursor} : undefined
+      })
+    } else if (input.feed === "comments") {
+      getPosts = await ctx.prisma.post.findMany({
+        where: {
+          comments: {
+            some: {
+              userId: input.userId
+            }
+          }
+        },
+        include: {votes:true, comments: true},
+        orderBy: {createdAt: "desc"},
         take: limit + 1,
         cursor: cursor ? {id: cursor} : undefined
       })

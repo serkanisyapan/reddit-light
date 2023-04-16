@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 
-const postFeedOptions = ["posts", "upvoted", "downvoted"];
+const postFeedOptions = ["posts", "upvoted", "downvoted", "comments"];
 
 export const ProfileFeedQuery = (props: { username: string }) => {
   const { user } = useUser();
