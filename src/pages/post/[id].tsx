@@ -2,10 +2,10 @@ import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import { api } from "@/utils/api";
 import { generateSSGHelper } from "@/utils/ssgHelper";
-import { SinglePost } from "@/components/SinglePost";
 import { Navbar } from "@/components/Navbar";
+import PostView from "@/components/PostView";
 
-const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
+const PostPage: NextPage<{ id: string }> = ({ id }) => {
   const { data } = api.post.getPostById.useQuery(
     {
       id,
@@ -23,7 +23,7 @@ const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
       </Head>
       <Navbar />
       <div className="mt-5 md:w-full md:max-w-2xl">
-        <SinglePost {...data} isPostPage={true} />
+        <PostView {...data} />
       </div>
     </>
   );
@@ -46,4 +46,4 @@ export const getStaticPaths = () => {
   return { paths: [], fallback: "blocking" };
 };
 
-export default SinglePostPage;
+export default PostPage;
