@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { toast } from "react-hot-toast";
 import { Navbar } from "@/components/Navbar";
+import useTextarea from "@/hooks/useTextarea";
 
 type PostInputs = {
   title: string;
@@ -14,6 +15,7 @@ type PostInputs = {
 
 export default function App() {
   const router = useRouter();
+  const textareaRef = useTextarea();
   const {
     register,
     handleSubmit,
@@ -38,6 +40,8 @@ export default function App() {
       }
     },
   });
+  const { ref, ...rest } = register("content", { required: true });
+
   const onSubmit: SubmitHandler<PostInputs> = (data) => {
     void mutate({ content: data.content, title: data.title });
   };
@@ -47,7 +51,7 @@ export default function App() {
       <Navbar />
       <div className="flex h-screen justify-center">
         <form
-          className="mt-16 flex w-96 flex-col p-2"
+          className="mt-16 flex w-2/5 flex-col p-2"
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onSubmit={handleSubmit(onSubmit)}
         >
@@ -62,18 +66,22 @@ export default function App() {
               }`}
               {...register("title")}
             />
-            {errors.title && <span>This field is required</span>}
+            {errors.title && <span>Title cannot be empty</span>}
           </div>
           <label className="label mt-3">
             <span className="label-text">text</span>
           </label>
           <textarea
-            className={`textarea-primary textarea text-base ${
+            className={`min-h-36 textarea-primary textarea textarea-md overflow-hidden text-lg ${
               errors.content ? "textarea-error" : ""
             }`}
-            {...register("content", { required: true })}
+            {...rest}
+            ref={(e) => {
+              ref(e);
+              textareaRef.current = e;
+            }}
           />
-          {errors.content && <span>This field is required</span>}
+          {errors.content && <span>Text cannot be empty</span>}
           <button
             disabled={isPosting}
             className="btn-primary btn mt-5"
@@ -86,3 +94,5 @@ export default function App() {
     </div>
   );
 }
+
+// https://blog.logrocket.com/react-hook-form-complete-guide/

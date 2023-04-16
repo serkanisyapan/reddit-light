@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import PostComment from "./PostComment";
+import useTextarea from "@/hooks/useTextarea";
 dayjs.extend(relativeTime);
 
 type PostWithUserInfo = RouterOutputs["post"]["getAll"]["posts"][number];
@@ -223,6 +224,7 @@ const CommentForm = (props: { postId: string }) => {
   const [commentError, setCommentError] = useState("");
   const { user } = useUser();
   const ctx = api.useContext();
+  const textareaRef = useTextarea();
   const { mutate, isLoading: isCommenting } = api.post.commentPost.useMutation({
     onSuccess: () => {
       setCommentText("");
@@ -246,15 +248,18 @@ const CommentForm = (props: { postId: string }) => {
   return (
     <form className="mt-10 flex flex-col items-end justify-end">
       <textarea
+        onClick={(event) => event.stopPropagation()}
+        ref={textareaRef}
         disabled={isCommenting}
         onChange={(event) => setCommentText(event.target.value)}
         value={commentText}
         placeholder="Leave a comment..."
-        className={`textarea-bordered textarea textarea-md w-full overflow-auto ${
+        className={`textarea-bordered textarea textarea-md w-full overflow-hidden ${
           commentError ? "textarea-error" : ""
         }
         `}
       />
+      <span className="mt-2 text-slate-500">{commentText.length}/191</span>
       <div className="w-full text-slate-400">
         {commentError && <span>{commentError}</span>}
       </div>

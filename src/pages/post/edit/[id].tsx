@@ -7,6 +7,9 @@ import type { GetStaticProps, NextPage } from "next";
 import { generateSSGHelper } from "@/utils/ssgHelper";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
+import useTextarea from "@/hooks/useTextarea";
+import { useEffect } from "react";
+import { Navbar } from "@/components/Navbar";
 
 type PostInputs = {
   title: string;
@@ -14,6 +17,7 @@ type PostInputs = {
 };
 
 const EditPostPage: NextPage<{ id: string }> = ({ id }) => {
+  const textareaRef = useTextarea();
   const { data } = api.post.getPostById.useQuery({
     id,
   });
@@ -40,51 +44,64 @@ const EditPostPage: NextPage<{ id: string }> = ({ id }) => {
     },
   });
 
+  useEffect(() => {
+    if (!textareaRef.current) return;
+    textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+  }, []);
+
   const onSubmit: SubmitHandler<PostInputs> = (editData) => {
     if (!data) throw new Error("Post does not exist.");
     void mutate({ id: data.post.id, userId: data.author.id, data: editData });
   };
+  const { ref, ...rest } = register("content", { required: true });
 
   if (!data) return <div>404</div>;
 
   return (
-    <div className="flex h-screen justify-center">
-      <form
-        className="mt-16 flex w-96 flex-col p-2"
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div>
-          <label className="label">
-            <span className="label-text">title</span>
-          </label>
-          <input
-            type="text"
-            className={`input-primary input w-full ${
-              errors.title ? "input-error" : ""
-            }`}
-            {...register("title")}
-          />
-          {errors.title && <span>This field is required</span>}
-        </div>
-        <label className="label mt-3">
-          <span className="label-text">text</span>
-        </label>
-        <textarea
-          className={`textarea-primary textarea text-base ${
-            errors.content ? "textarea-error" : ""
-          }`}
-          {...register("content", { required: true })}
-        />
-        {errors.content && <span>This field is required</span>}
-        <button
-          disabled={isEditing}
-          className="btn-primary btn mt-5"
-          type="submit"
+    <div className="flex h-full w-full flex-col">
+      <Navbar />
+      <div className="flex h-full w-full justify-center">
+        <form
+          className="mt-16 flex w-2/5 flex-col p-2"
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          onSubmit={handleSubmit(onSubmit)}
         >
-          {isEditing ? <LoadingSpinner /> : "Edit Post"}
-        </button>
-      </form>
+          <div>
+            <label className="label">
+              <span className="label-text">title</span>
+            </label>
+            <input
+              type="text"
+              className={`input-primary input w-full ${
+                errors.title ? "input-error" : ""
+              }`}
+              {...register("title")}
+            />
+            {errors.title && <span>This field is required</span>}
+          </div>
+          <label className="label mt-3">
+            <span className="label-text">text</span>
+          </label>
+          <textarea
+            className={`min-h-36 textarea-primary textarea textarea-md overflow-hidden text-lg ${
+              errors.content ? "textarea-error" : ""
+            }`}
+            {...rest}
+            ref={(e) => {
+              ref(e);
+              textareaRef.current = e;
+            }}
+          />
+          {errors.content && <span>This field is required</span>}
+          <button
+            disabled={isEditing}
+            className="btn-primary btn mt-5"
+            type="submit"
+          >
+            {isEditing ? <LoadingSpinner /> : "Edit Post"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
