@@ -1,11 +1,10 @@
-import { api, type RouterOutputs } from "@/utils/api";
+import type { PostType } from "@/types/postType";
+import { api } from "@/utils/api";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { DeleteIcon, EditIcon, MoreIcon } from "./Icons";
 import { LoadingSpinner } from "./LoadingSpinner";
-
-type PostType = RouterOutputs["post"]["getAll"]["posts"][number];
 
 export const PostOptions = (props: PostType) => {
   const { post, author } = props;

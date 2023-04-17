@@ -1,4 +1,3 @@
-import type { RouterOutputs } from "@/utils/api";
 import Link from "next/link";
 import Image from "next/image";
 import dayjs from "dayjs";
@@ -6,9 +5,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useUser } from "@clerk/nextjs";
 import { PostOptions } from "./PostOptions";
 import { VoteSection } from "./VoteSection";
+import type { PostType } from "@/types/postType";
 dayjs.extend(relativeTime);
-
-type PostType = RouterOutputs["post"]["getAll"]["posts"][number];
 
 export const SinglePost = (props: PostType) => {
   const { post, author } = props;

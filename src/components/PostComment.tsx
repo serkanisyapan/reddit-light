@@ -3,6 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { DeleteIcon, EditIcon, MoreIcon } from "./Icons";
+import { LoadingSpinner } from "./LoadingSpinner";
+import type { PostType } from "@/types/postType";
 dayjs.extend(relativeTime);
 
 export default function PostComment(props: Comment) {
@@ -36,3 +39,37 @@ export default function PostComment(props: Comment) {
     </div>
   );
 }
+
+const CommentOptions = (props: PostType) => {
+  const { post, author } = props;
+  return (
+    <div className="dropdown-end dropdown">
+      <label
+        onClick={(event) => event.stopPropagation()}
+        tabIndex={0}
+        className="cursor-pointer"
+      >
+        <MoreIcon />
+      </label>
+      <ul
+        tabIndex={0}
+        className="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
+      >
+        <Link href={`/post/edit/${post.id}`}>
+          <li>
+            <a>
+              <EditIcon />
+              Edit Comment
+            </a>
+          </li>
+        </Link>
+        <li>
+          <a>
+            {/* {isDeleting ? <LoadingSpinner /> : <DeleteIcon />} */}
+            Delete Comment
+          </a>
+        </li>
+      </ul>
+    </div>
+  );
+};

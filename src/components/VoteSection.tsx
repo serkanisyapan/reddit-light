@@ -1,9 +1,8 @@
-import { api, type RouterOutputs } from "@/utils/api";
+import type { PostType } from "@/types/postType";
+import { api } from "@/utils/api";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { DownvoteIcon, UpvoteIcon } from "./Icons";
-
-type PostType = RouterOutputs["post"]["getAll"]["posts"][number];
 
 export const VoteSection = (props: PostType) => {
   const [voteCount, setVoteCount] = useState(0);

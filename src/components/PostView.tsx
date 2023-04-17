@@ -1,4 +1,3 @@
-import { type RouterOutputs } from "@/utils/api";
 import Link from "next/link";
 import Image from "next/image";
 import dayjs from "dayjs";
@@ -8,9 +7,8 @@ import PostComment from "./PostComment";
 import { CommentForm } from "./CommentForm";
 import { VoteSection } from "./VoteSection";
 import { PostOptions } from "./PostOptions";
+import type { PostType } from "@/types/postType";
 dayjs.extend(relativeTime);
-
-type PostType = RouterOutputs["post"]["getAll"]["posts"][number];
 
 export default function PostView(props: PostType) {
   const { post, author } = props;

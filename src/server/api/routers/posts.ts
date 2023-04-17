@@ -107,32 +107,6 @@ export const postRouter = createTRPCRouter({
     return post;
   }),
 
-  commentPost: privateProcedure
-  .input(commentValidation)
-  .mutation(async({ ctx, input }) => {
-    const user:User = (await clerkClient.users.getUser(input.userId))
-    if (!user || !user.username) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Comment author not found.'
-      })
-    }
-    const authorId = ctx.userId;
-    const { success } = await rateLimitComment.limit(authorId)
-    if (!success) throw new TRPCError({code: "TOO_MANY_REQUESTS"})
-    if (input.userId !== authorId) throw new TRPCError({code: "UNAUTHORIZED"})
-    const comment = await ctx.prisma.comment.create({
-      data: {
-        comment: input.comment,
-        postId: input.postId,
-        userId: authorId,
-        username: user.username,
-        picture: user.profileImageUrl
-      }
-    })
-    return comment
-  }),
-
   deletePost: privateProcedure
   .input(z.object({id: z.string(), userId: z.string()}))
   .mutation(async({ ctx, input }) => {
@@ -166,6 +140,45 @@ export const postRouter = createTRPCRouter({
       data
     })
     return post
+  }),
+
+  commentPost: privateProcedure
+  .input(commentValidation)
+  .mutation(async({ ctx, input }) => {
+    const user:User = (await clerkClient.users.getUser(input.userId))
+    if (!user || !user.username) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Comment author not found.'
+      })
+    }
+    const authorId = ctx.userId;
+    const { success } = await rateLimitComment.limit(authorId)
+    if (!success) throw new TRPCError({code: "TOO_MANY_REQUESTS"})
+    if (input.userId !== authorId) throw new TRPCError({code: "UNAUTHORIZED"})
+    const comment = await ctx.prisma.comment.create({
+      data: {
+        comment: input.comment,
+        postId: input.postId,
+        userId: authorId,
+        username: user.username,
+        picture: user.profileImageUrl
+      }
+    })
+    return comment
+  }),
+
+  deleteComment: privateProcedure
+  .input(z.object({id: z.number().min(1), userId: z.string()}))
+  .mutation(async({ ctx, input }) => {
+    const authorId = ctx.userId
+    if (input.userId !== authorId) throw new TRPCError({code: "UNAUTHORIZED"})
+    const comment = await ctx.prisma.comment.delete({
+      where: {
+        id: input.id
+      }
+    })
+    return comment
   }),
 
   votePost: privateProcedure
