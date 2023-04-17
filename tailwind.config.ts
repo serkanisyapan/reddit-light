@@ -7,6 +7,6 @@ export default {
   },
   plugins: [require("daisyui")],
   daisyUi: {
-    themes: ["halloween", "emerald"]
+    themes: ["forest"]
   } 
 } satisfies Config;

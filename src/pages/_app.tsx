@@ -10,7 +10,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider {...pageProps}>
       <Toaster position="bottom-center" />
-      <main className="flex flex-col items-center" data-theme="halloween">
+      <main className="flex flex-col items-center" data-theme="forest">
         <Component {...pageProps} />
       </main>
     </ClerkProvider>
