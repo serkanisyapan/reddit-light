@@ -5,10 +5,14 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { DeleteIcon, EditIcon, MoreIcon } from "./Icons";
 import { LoadingSpinner } from "./LoadingSpinner";
-import type { PostType } from "@/types/postType";
+import { api } from "@/utils/api";
+import { toast } from "react-hot-toast";
+import { useUser } from "@clerk/nextjs";
 dayjs.extend(relativeTime);
 
 export default function PostComment(props: Comment) {
+  const { user } = useUser();
+  const isCommentAuthor = props.userId === user?.id;
   return (
     <div className="flex bg-neutral-focus">
       <div className="w-full max-w-[95%]">
@@ -31,6 +35,7 @@ export default function PostComment(props: Comment) {
               <span>{`${dayjs(props.createdAt).fromNow()}`}</span>
             </div>
           </div>
+          {isCommentAuthor && <CommentOptions {...props} />}
         </div>
         <p className="whitespace-pre-wrap break-words text-base">
           {props.comment}
@@ -40,8 +45,16 @@ export default function PostComment(props: Comment) {
   );
 }
 
-const CommentOptions = (props: PostType) => {
-  const { post, author } = props;
+const CommentOptions = (props: Comment) => {
+  const { id, userId } = props;
+  const ctx = api.useContext();
+  const { mutate, isLoading: isDeleting } = api.post.deleteComment.useMutation({
+    onSuccess: () => {
+      void ctx.post.getPostById.invalidate();
+      toast.success("Deleted succesfully.");
+    },
+  });
+
   return (
     <div className="dropdown-end dropdown">
       <label
@@ -55,17 +68,22 @@ const CommentOptions = (props: PostType) => {
         tabIndex={0}
         className="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
       >
-        <Link href={`/post/edit/${post.id}`}>
+        {/* <Link href={`/post/edit/${post.id}`}>
           <li>
             <a>
               <EditIcon />
               Edit Comment
             </a>
           </li>
-        </Link>
-        <li>
+        </Link> */}
+        <li
+          onClick={(event) => {
+            event.stopPropagation();
+            mutate({ id, userId });
+          }}
+        >
           <a>
-            {/* {isDeleting ? <LoadingSpinner /> : <DeleteIcon />} */}
+            {isDeleting ? <LoadingSpinner /> : <DeleteIcon />}
             Delete Comment
           </a>
         </li>
