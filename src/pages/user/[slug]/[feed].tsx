@@ -1,7 +1,7 @@
 import { AlertIcon } from "@/components/Icons";
 import { Navbar } from "@/components/Navbar";
 import { ProfileFeed } from "@/components/ProfileFeed";
-import { ProfileFeedQuery } from "@/components/ProfileFeedQuery";
+import { ProfileFeedTabs } from "@/components/ProfileFeedTabs";
 import ScrollToTop from "@/components/ScrollToTop";
 import { api } from "@/utils/api";
 import { generateSSGHelper } from "@/utils/ssgHelper";
@@ -45,7 +45,7 @@ const FeedPage: NextPage<{ feed: string; username: string }> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />
-      <ProfileFeedQuery username={username} />
+      <ProfileFeedTabs username={username} />
       <ProfileFeed userId={data.id} feed={feed} />
       <ScrollToTop />
     </>
