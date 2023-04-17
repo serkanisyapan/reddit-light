@@ -60,9 +60,9 @@ const EditPostPage: NextPage<{ id: string }> = ({ id }) => {
   return (
     <div className="flex h-full w-full flex-col">
       <Navbar />
-      <div className="flex h-full w-full justify-center">
+      <div className="flex h-full w-full items-center justify-center">
         <form
-          className="mt-16 flex w-2/5 flex-col p-2"
+          className="mt-16 flex w-full flex-col p-2 md:w-2/5"
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onSubmit={handleSubmit(onSubmit)}
         >

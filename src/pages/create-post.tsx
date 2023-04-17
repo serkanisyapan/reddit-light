@@ -49,9 +49,9 @@ export default function App() {
   return (
     <div className="flex h-full w-full flex-col">
       <Navbar />
-      <div className="flex h-screen justify-center">
+      <div className="flex items-center justify-center">
         <form
-          className="mt-16 flex w-2/5 flex-col p-2"
+          className="mt-16 flex w-full flex-col p-2 md:w-2/5"
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onSubmit={handleSubmit(onSubmit)}
         >
