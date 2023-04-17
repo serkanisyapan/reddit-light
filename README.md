@@ -1,4 +1,24 @@
-# Full Stack Reddit Light with T3 Stack
+## Reddit Light
+
+Reddit Light is a full stack application bootstrapped with T3-Stack. Users can create new posts about any topic, leave comments on posts and upvote-downvote them.
+
+### Live demo
+
+\*\*https://reddit-light.vercel.app
+
+### Getting Started
+
+To run the project locally, follow these steps:
+
+- Clone the repository to your local machine.
+- Navigate to the project directory and run npm install to install all dependencies.
+- Create a **.env** file in the project directory and setup your environment variables based on **.env.example**
+- Run **npm start** to start the development server.
+
+#### Prerequisites
+
+- Node.js
+- npm
 
 ## Tech Stack
 
@@ -17,22 +37,24 @@
 - [Clerk](https://clerk.com/)
 - [Upstash](https://upstash.com/)
 
-## Running locally
+### Features
 
-Install dependencies
+- **Authentication** using Github account via Clerk
+- **Planetscale database** to store posts, comments and votes
+- **Posts** create, edit and delete posts you have posted
+- **Comments** leave comments to posts other users created
+- **Vote** upvote or downvote on posts other users created
+- **User Profile** check posts you have posted, commented and voted on your profile page
 
-```sh
-npm install
-```
+### Authors
 
-Copy `.env.example` to `.env` file and update variables.
+- Serkan Isyapan - Developer
 
-This project uses Planetscale database, make sure to update DATABASE_URL in `.env` file
+### Acknowledgments
 
-Finally run the development server:
-
-```sh
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- React.js documentation
+- Typescript
+- tRPC
+- Prisma
+- Tanstack React Query
+- Zod
