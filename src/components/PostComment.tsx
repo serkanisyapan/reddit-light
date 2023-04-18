@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { DeleteIcon, EditIcon, MoreIcon } from "./Icons";
+import { DeleteIcon, MoreIcon } from "./Icons";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { api } from "@/utils/api";
 import { toast } from "react-hot-toast";
@@ -68,14 +68,6 @@ const CommentOptions = (props: Comment) => {
         tabIndex={0}
         className="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
       >
-        {/* <Link href={`/post/edit/${post.id}`}>
-          <li>
-            <a>
-              <EditIcon />
-              Edit Comment
-            </a>
-          </li>
-        </Link> */}
         <li
           onClick={(event) => {
             event.stopPropagation();

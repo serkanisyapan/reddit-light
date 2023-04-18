@@ -42,11 +42,11 @@ export const PostOptions = (props: PostType) => {
         className="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
       >
         <Link href={`/post/edit/${post.id}`}>
-          <li>
-            <a>
+          <li className="flex flex-row items-center">
+            <span>
               <EditIcon />
-              Edit Post
-            </a>
+            </span>
+            Edit Post
           </li>
         </Link>
         <li

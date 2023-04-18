@@ -19,8 +19,8 @@ export const SinglePost = (props: PostType) => {
   return (
     <Link href={`/post/${post.id}`} legacyBehavior>
       <div
-        className="box-border flex cursor-pointer rounded-md border-[1px] border-neutral bg-neutral-focus
-          p-4 hover:border-white
+        className="box-border flex max-h-[340px] cursor-pointer overflow-hidden rounded-md border-[1px] border-neutral bg-neutral-focus p-4
+           hover:border-white
         "
         key={post.id}
       >
@@ -50,14 +50,6 @@ export const SinglePost = (props: PostType) => {
           <h3 className="mb-3 break-words text-xl">{post.title}</h3>
           <p className="whitespace-pre-wrap break-words text-base">
             {post.content}
-            {post.content.length > 250 && (
-              <Link
-                className="ml-2 cursor-pointer text-primary hover:underline"
-                href={`/post/${post.id}`}
-              >
-                Read More
-              </Link>
-            )}
           </p>
         </div>
       </div>
