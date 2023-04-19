@@ -9,7 +9,7 @@ export const Navbar = () => {
   let userContent;
   if (!user || !user?.username || !isSignedIn) {
     userContent = (
-      <div>
+      <div className="mr-5 text-xl text-white">
         <SignInButton />
       </div>
     );
