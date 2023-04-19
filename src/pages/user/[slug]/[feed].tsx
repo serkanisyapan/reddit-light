@@ -20,7 +20,10 @@ const FeedPage: NextPage<{ feed: string; username: string }> = ({
     },
     { refetchOnWindowFocus: false }
   );
-  if (!user || user.username !== username) {
+  if (
+    (feed === "upvoted" || feed === "downvoted") &&
+    username !== user?.username
+  ) {
     return (
       <div className="flex h-full w-full flex-col items-center">
         <Navbar />
