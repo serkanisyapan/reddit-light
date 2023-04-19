@@ -15,7 +15,7 @@ export const Navbar = () => {
     );
   } else {
     userContent = (
-      <div className="flex flex-row items-center gap-2 transition">
+      <div className="flex items-center gap-2">
         <div className="tooltip tooltip-bottom mr-2" data-tip="Create Post">
           <Link href="/create-post">
             <PlusIcon />
@@ -23,13 +23,13 @@ export const Navbar = () => {
         </div>
         <span>{user.username}</span>
         <div className="dropdown-end dropdown">
-          <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
+          <label tabIndex={0}>
             <Image
-              className="rounded-full"
+              className="cursor-pointer rounded-full"
               src={`${user.profileImageUrl}`}
               alt={`${user.username}'s profile picture`}
-              width={32}
-              height={32}
+              width={44}
+              height={44}
             />
           </label>
           <ul
@@ -49,16 +49,22 @@ export const Navbar = () => {
   }
 
   return (
-    <div className="navbar min-h-[70px] bg-primary text-primary-content">
-      <div className="flex-1">
-        <Link href="/" className="btn-ghost btn text-xl normal-case">
-          Reddit Light
-        </Link>
-      </div>
+    <div className="navbar flex min-h-[70px] justify-between bg-primary text-primary-content">
+      <Link
+        href="/"
+        className="flex flex-row items-center gap-2 text-xl normal-case"
+      >
+        <Image
+          className="box-border rounded-full border-[2px] border-[#df744a] object-cover"
+          src="/redditlight.png"
+          alt="Reddit Light"
+          width={52}
+          height={52}
+        />
+        <span className="invisible md:visible">Reddit Light</span>
+      </Link>
       <div className="flex-none gap-2">
-        <div>
-          <div>{userContent}</div>
-        </div>
+        <div>{userContent}</div>
       </div>
     </div>
   );
