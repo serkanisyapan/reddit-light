@@ -46,19 +46,20 @@ export const ProfileFeed = (props: { userId: string; feed: string }) => {
   return (
     <div className="mb-8 mt-5 flex flex-col gap-3 md:w-full md:max-w-2xl">
       {fetchedPosts?.map((post) => {
-        const findUserComment = post.post.comments.find(
+        const { post: userPost } = post;
+        const findUserComment = userPost.comments?.find(
           (comment) => comment.userId === props.userId
         );
         return (
-          <div className="bg-neutral-focus" key={post.post.id}>
+          <div className="bg-neutral-focus" key={userPost.id}>
             {props.feed !== "comments" && <SinglePost {...post} />}
             {props.feed === "comments" && findUserComment && (
               <div
-                onClick={() => void postRouter.push(`/post/${post.post.id}`)}
+                onClick={() => void postRouter.push(`/post/${userPost.id}`)}
                 className="cursor-pointer border-[1px] border-neutral hover:border-white"
               >
                 <p className="px-12 py-2 text-xs">
-                  {findUserComment.username} commented on {post.post.title}
+                  {findUserComment.username} commented on {userPost.title}
                 </p>
                 <div className="ml-8 bg-neutral-focus p-4">
                   <PostComment {...findUserComment} />

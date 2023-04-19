@@ -16,8 +16,8 @@ type PostTypes= {
   title: string;
   content: string;
   authorId: string;
-  votes: Vote[]
-  comments: Comment[]
+  votes?: Vote[]
+  comments?: Comment[]
 }
 const voteValidation = z.object({
   value: z.number(),
@@ -30,6 +30,9 @@ const commentValidation = z.object({
   userId: z.string()
 })
 
+const checkIsUserAuthorized = (id:string, authorId:string) => {
+  if (id !== authorId) throw new TRPCError({code:"UNAUTHORIZED"})
+}
 
 const addUserDataToPost = async (posts: PostTypes[]) => {
     const users = (await clerkClient.users.getUserList({
@@ -110,8 +113,7 @@ export const postRouter = createTRPCRouter({
   deletePost: privateProcedure
   .input(z.object({id: z.string(), userId: z.string()}))
   .mutation(async({ ctx, input }) => {
-    const authorId = ctx.userId
-    if (input.userId !== authorId) throw new TRPCError({code: "UNAUTHORIZED"})
+    checkIsUserAuthorized(input.id, ctx.userId)
     const post = await ctx.prisma.post.delete({
       where: {
         id: input.id
@@ -131,8 +133,7 @@ export const postRouter = createTRPCRouter({
   }))
   .mutation(async({ ctx, input }) => {
     const { id, data } = input
-    const authorId = ctx.userId
-    if (input.userId !== authorId) throw new TRPCError({code: "UNAUTHORIZED"})
+    checkIsUserAuthorized(input.userId, ctx.userId)
     const post = ctx.prisma.post.update({
       where: {
         id
@@ -152,15 +153,14 @@ export const postRouter = createTRPCRouter({
         message: 'Comment author not found.'
       })
     }
-    const authorId = ctx.userId;
-    const { success } = await rateLimitComment.limit(authorId)
+    checkIsUserAuthorized(input.userId, ctx.userId)
+    const { success } = await rateLimitComment.limit(ctx.userId)
     if (!success) throw new TRPCError({code: "TOO_MANY_REQUESTS"})
-    if (input.userId !== authorId) throw new TRPCError({code: "UNAUTHORIZED"})
     const comment = await ctx.prisma.comment.create({
       data: {
         comment: input.comment,
         postId: input.postId,
-        userId: authorId,
+        userId: ctx.userId,
         username: user.username,
         picture: user.profileImageUrl
       }
@@ -171,8 +171,7 @@ export const postRouter = createTRPCRouter({
   deleteComment: privateProcedure
   .input(z.object({id: z.number().min(1), userId: z.string()}))
   .mutation(async({ ctx, input }) => {
-    const authorId = ctx.userId
-    if (input.userId !== authorId) throw new TRPCError({code: "UNAUTHORIZED"})
+    checkIsUserAuthorized(input.userId, ctx.userId)
     const comment = await ctx.prisma.comment.delete({
       where: {
         id: input.id
@@ -185,7 +184,7 @@ export const postRouter = createTRPCRouter({
   .input(voteValidation)
   .mutation(async({ ctx, input }) => {
     const authorId = ctx.userId 
-    if (input.userId !== authorId) throw new TRPCError({code: "UNAUTHORIZED"})
+    checkIsUserAuthorized(input.userId, authorId)
 
     // checks if user already voted for that post, if exists delete
     const previousVote = await ctx.prisma.vote.findFirst({
@@ -241,10 +240,8 @@ export const postRouter = createTRPCRouter({
             }
           },
         },
-        orderBy: {
-          createdAt: "desc"
-        },
-        include: {votes:true, comments: true},
+        include: {votes:true},
+        orderBy: {createdAt: "desc"},
         take: limit + 1,
         cursor: cursor ? {id: cursor} : undefined
       })
@@ -257,17 +254,17 @@ export const postRouter = createTRPCRouter({
             }
           }
         },
-        include: {votes:true, comments: true},
+        include: {comments: true},
         orderBy: {createdAt: "desc"},
         take: limit + 1,
         cursor: cursor ? {id: cursor} : undefined
       })
     } else {
       getPosts = await ctx.prisma.post.findMany({
-        include: {votes:true, comments: true},
         where: {
           authorId: input.userId
         },
+        include: {votes:true},
         orderBy: {createdAt: "desc"},
         take: limit + 1,
         cursor: cursor ? {id: cursor} : undefined
