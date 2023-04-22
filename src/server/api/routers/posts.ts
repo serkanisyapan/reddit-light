@@ -283,10 +283,10 @@ export const postRouter = createTRPCRouter({
   .input(z.object({id: z.string()}))
   .query(async({ctx, input}) => {
     const post = await ctx.prisma.post.findUnique({
-      include: {votes: true, comments: true},
+      include: {votes: true, comments: {orderBy: {createdAt: "desc"}}},
       where:{
         id: input.id
-      }
+      },
     })
     if (!post) throw new TRPCError({code: "NOT_FOUND"})
     return (await addUserDataToPost([post]))[0];
