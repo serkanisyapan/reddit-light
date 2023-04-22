@@ -36,7 +36,7 @@ const Home: NextPage = () => {
   const fetchedPosts = data?.pages.flatMap((allPosts) => allPosts.posts);
   if (data) {
     postContent = (
-      <div className="mt-5 flex flex-col gap-3">
+      <div className="mt-5 flex flex-col">
         {fetchedPosts?.map((post) => (
           <SinglePost {...post} key={post.post.id} />
         ))}

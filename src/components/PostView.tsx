@@ -8,6 +8,7 @@ import { CommentForm } from "./CommentForm";
 import { VoteSection } from "./VoteSection";
 import { PostOptions } from "./PostOptions";
 import type { PostType } from "@/types/postType";
+import MediaButtons from "./ShareButton";
 dayjs.extend(relativeTime);
 
 export default function PostView(props: PostType) {
@@ -50,12 +51,13 @@ export default function PostView(props: PostType) {
         <>
           <CommentForm postId={post.id} />
           <div className="mb-5 mt-10 flex flex-col gap-8">
-            {post.comments.map((comment) => (
+            {post.comments?.map((comment) => (
               <PostComment key={comment.id} {...comment} />
             ))}
           </div>
         </>
       </div>
+      <MediaButtons postId={post.id} />
     </div>
   );
 }
