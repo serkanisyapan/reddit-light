@@ -1,7 +1,7 @@
 import { toast } from "react-hot-toast";
 import { ShareIcon } from "./Icons";
 
-export default function MediaButtons(props: { postId: string }) {
+export default function ShareButton(props: { postId: string }) {
   return (
     <button
       onClick={(event) => {
