@@ -2,6 +2,7 @@ import type { PostType } from "@/types/postType";
 import { api } from "@/utils/api";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { DownvoteIcon, UpvoteIcon } from "./Icons";
 
 export const VoteSection = (props: PostType) => {
@@ -30,7 +31,10 @@ export const VoteSection = (props: PostType) => {
   const { user } = useUser();
 
   const handlePostVote = (voteType: string) => {
-    if (!user) return;
+    if (!user) {
+      toast.error("You must sign in to vote.");
+      return;
+    }
     mutate({
       value: voteType === "upvote" ? 1 : -1,
       postId: post.id,
@@ -40,6 +44,7 @@ export const VoteSection = (props: PostType) => {
 
   useEffect(() => {
     const isUserVotedPost = () => {
+      if (!user) return;
       const findVote = post.votes.find((vote) => vote.userId === user?.id);
       if (!findVote) return;
       setIsVoted({ voted: findVote ? true : false, value: findVote.value });
@@ -54,7 +59,7 @@ export const VoteSection = (props: PostType) => {
     };
     postVoteCount();
     isUserVotedPost();
-  }, [post.votes, user?.id]);
+  }, [post.votes, user?.id, user]);
 
   return (
     <div className="mr-3 flex flex-col items-center">

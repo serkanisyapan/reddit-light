@@ -27,7 +27,10 @@ export const CommentForm = (props: { postId: string }) => {
   });
 
   const handleComment = (text: string) => {
-    if (!user) throw new Error("UNAUTHORIZED");
+    if (!user) {
+      toast.error("You must sign in to comment.");
+      return;
+    }
     void mutate({ comment: text, postId: props.postId, userId: user.id });
   };
 
