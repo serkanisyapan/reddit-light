@@ -6,7 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import { PostOptions } from "./PostOptions";
 import { VoteSection } from "./VoteSection";
 import type { PostType } from "@/types/postType";
-import ShareButton from "./ShareButton";
+import PostButtons from "./PostButtons";
 dayjs.extend(relativeTime);
 
 export const SinglePost = (props: PostType) => {
@@ -54,7 +54,7 @@ export const SinglePost = (props: PostType) => {
           <p className="whitespace-pre-wrap break-words text-base">
             {post.content}
           </p>
-          <ShareButton postId={post.id} />
+          <PostButtons commentCount={post._count.comments} postId={post.id} />
         </div>
       </div>
     </Link>

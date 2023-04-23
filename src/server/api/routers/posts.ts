@@ -81,7 +81,7 @@ export const postRouter = createTRPCRouter({
     const { cursor } = input
     const limit = input.limit ?? 15
     const posts = await ctx.prisma.post.findMany({
-      include: {votes: true, comments: true},
+      include: {votes: true, _count: {select: {comments: true}}},
       orderBy: {createdAt: "desc"}, 
       take: limit + 1,
       cursor: cursor ? {id: cursor} : undefined,
@@ -240,7 +240,7 @@ export const postRouter = createTRPCRouter({
             }
           },
         },
-        include: {votes:true},
+        include: {votes:true, _count:{select:{comments:true}}},
         orderBy: {createdAt: "desc"},
         take: limit + 1,
         cursor: cursor ? {id: cursor} : undefined
@@ -264,7 +264,7 @@ export const postRouter = createTRPCRouter({
         where: {
           authorId: input.userId
         },
-        include: {votes:true},
+        include: {votes:true, _count:{select:{comments:true}}},
         orderBy: {createdAt: "desc"},
         take: limit + 1,
         cursor: cursor ? {id: cursor} : undefined
@@ -283,7 +283,7 @@ export const postRouter = createTRPCRouter({
   .input(z.object({id: z.string()}))
   .query(async({ctx, input}) => {
     const post = await ctx.prisma.post.findUnique({
-      include: {votes: true, comments: {orderBy: {createdAt: "desc"}}},
+      include: {votes: true, comments: {orderBy: {createdAt: "desc"}}, _count: {select: {comments: true}}},
       where:{
         id: input.id
       },

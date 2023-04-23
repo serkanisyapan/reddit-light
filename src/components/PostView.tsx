@@ -8,7 +8,7 @@ import { CommentForm } from "./CommentForm";
 import { VoteSection } from "./VoteSection";
 import { PostOptions } from "./PostOptions";
 import type { PostType } from "@/types/postType";
-import ShareButton from "./ShareButton";
+import PostButtons from "./PostButtons";
 dayjs.extend(relativeTime);
 
 export default function PostView(props: PostType) {
@@ -49,7 +49,7 @@ export default function PostView(props: PostType) {
           {post.content}
         </p>
         <div className="mt-5">
-          <ShareButton postId={post.id} />
+          <PostButtons postId={post.id} commentCount={post._count.comments} />
         </div>
         <>
           <CommentForm postId={post.id} />
