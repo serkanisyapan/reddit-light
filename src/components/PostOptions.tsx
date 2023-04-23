@@ -50,15 +50,14 @@ export const PostOptions = (props: PostType) => {
           </li>
         </Link>
         <li
+          className="flex flex-row items-center"
           onClick={(event) => {
             event.stopPropagation();
             mutate({ id: post.id, userId: author.id });
           }}
         >
-          <a>
-            {isDeleting ? <LoadingSpinner /> : <DeleteIcon />}
-            Delete Post
-          </a>
+          <span>{isDeleting ? <LoadingSpinner /> : <DeleteIcon />}</span>
+          Delete Post
         </li>
       </ul>
     </div>

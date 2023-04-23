@@ -40,9 +40,11 @@ export default function PostComment(props: Comment) {
           </div>
           {isCommentAuthor && <CommentOptions {...props} />}
         </div>
-        <p className="whitespace-pre-wrap break-words text-base">
-          {props.comment}
-        </p>
+        <Link href={`/post/${props.postId}`}>
+          <p className="whitespace-pre-wrap break-words text-base">
+            {props.comment}
+          </p>
+        </Link>
       </div>
     </div>
   );

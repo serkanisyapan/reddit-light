@@ -111,26 +111,29 @@ export const UpvoteIcon = ({
   isVoted,
 }: VoteProps) => {
   return (
-    <svg
+    <button
       onClick={(event) => {
         event.stopPropagation();
         if (isVoting) return;
         handlePostVote("upvote");
       }}
-      className={`cursor-pointer hover:stroke-primary ${
-        isVoted.value === 1 ? "fill-primary stroke-primary" : ""
-      }`}
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-      stroke="white"
-      strokeWidth="1"
-      strokeLinecap="round"
-      strokeLinejoin="miter"
     >
-      <polygon points="3 14 12 3 21 14 16 14 16 22 8 22 8 14 3 14"></polygon>
-    </svg>
+      <svg
+        className={`cursor-pointer hover:stroke-primary ${
+          isVoted.value === 1 ? "fill-primary stroke-primary" : ""
+        }`}
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        stroke="white"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeLinejoin="miter"
+      >
+        <polygon points="3 14 12 3 21 14 16 14 16 22 8 22 8 14 3 14"></polygon>
+      </svg>
+    </button>
   );
 };
 
@@ -140,36 +143,39 @@ export const DownvoteIcon = ({
   isVoted,
 }: VoteProps) => {
   return (
-    <svg
+    <button
       onClick={(event) => {
         event.stopPropagation();
         if (isVoting) return;
         handlePostVote("downvote");
       }}
-      className={`cursor-pointer hover:stroke-sky-600 ${
-        isVoted.value === -1 ? "fill-sky-600 stroke-sky-600" : ""
-      }`}
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      stroke="white"
-      strokeWidth="1"
-      strokeLinecap="round"
-      strokeLinejoin="miter"
-      transform="matrix(1, 0, 0, -1, 0, 0)"
     >
-      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-      <g
-        id="SVGRepo_tracerCarrier"
+      <svg
+        className={`cursor-pointer hover:stroke-sky-600 ${
+          isVoted.value === -1 ? "fill-sky-600 stroke-sky-600" : ""
+        }`}
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        stroke="white"
+        strokeWidth="1"
         strokeLinecap="round"
-        strokeLinejoin="round"
-      ></g>
-      <g id="SVGRepo_iconCarrier">
-        <polygon points="3 14 12 3 21 14 16 14 16 22 8 22 8 14 3 14"></polygon>
-      </g>
-    </svg>
+        strokeLinejoin="miter"
+        transform="matrix(1, 0, 0, -1, 0, 0)"
+      >
+        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+        <g
+          id="SVGRepo_tracerCarrier"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></g>
+        <g id="SVGRepo_iconCarrier">
+          <polygon points="3 14 12 3 21 14 16 14 16 22 8 22 8 14 3 14"></polygon>
+        </g>
+      </svg>
+    </button>
   );
 };
 
