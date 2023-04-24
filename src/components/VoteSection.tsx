@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 import { DownvoteIcon, UpvoteIcon } from "./Icons";
 
 export const VoteSection = (props: PostType) => {
-  const [voteCount, setVoteCount] = useState(0);
+  const [voteCount, setVoteCount] = useState(props.post.postVoteSum || 0);
   const [isVoted, setIsVoted] = useState({ voted: false, value: 0 });
   const { post } = props;
   const ctx = api.useContext();
@@ -49,15 +49,6 @@ export const VoteSection = (props: PostType) => {
       if (!findVote) return;
       setIsVoted({ voted: findVote ? true : false, value: findVote.value });
     };
-    const postVoteCount = () => {
-      let voteCount = 0;
-      for (const vote of post.votes) {
-        voteCount += vote.value;
-      }
-      setVoteCount(voteCount);
-      return voteCount;
-    };
-    postVoteCount();
     isUserVotedPost();
   }, [post.votes, user?.id, user]);
 

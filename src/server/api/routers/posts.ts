@@ -34,6 +34,11 @@ const checkIsUserAuthorized = (id:string, authorId:string) => {
   if (id !== authorId) throw new TRPCError({code:"UNAUTHORIZED"})
 }
 
+const calcPostVotes = (post: PostTypes) => {
+    const postVoteSum = post.votes?.reduce((sum, vote) => sum + vote.value, 0)
+    return postVoteSum
+}
+
 const addUserDataToPost = async (posts: PostTypes[]) => {
     const users = (await clerkClient.users.getUserList({
       userId: posts.map((post) => post.authorId),
@@ -42,6 +47,7 @@ const addUserDataToPost = async (posts: PostTypes[]) => {
 
     return posts.map((post) => {
       const author= users.find((user) => user.id === post.authorId) 
+      const postVoteSum = calcPostVotes(post)
       if (!author || !author.username) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -49,7 +55,10 @@ const addUserDataToPost = async (posts: PostTypes[]) => {
         })
       }
       return {
-        post,
+        post: {
+          ...post,
+          postVoteSum
+        },
         author: {
           ...author,
           username: author.username,
