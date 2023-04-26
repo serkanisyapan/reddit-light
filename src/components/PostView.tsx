@@ -55,7 +55,11 @@ export default function PostView(props: PostType) {
           <CommentForm postId={post.id} />
           <div id="comments" className="mb-5 mt-10 flex flex-col gap-8">
             {post.comments?.map((comment) => (
-              <PostComment key={comment.id} {...comment} />
+              <PostComment
+                key={comment.id}
+                {...comment}
+                authorId={post.authorId}
+              />
             ))}
           </div>
         </>

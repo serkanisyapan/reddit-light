@@ -10,9 +10,14 @@ import { toast } from "react-hot-toast";
 import { useUser } from "@clerk/nextjs";
 dayjs.extend(relativeTime);
 
-export default function PostComment(props: Comment) {
+interface CommentTypes extends Comment {
+  authorId: string;
+}
+
+export default function PostComment(props: CommentTypes) {
   const { user } = useUser();
   const isCommentAuthor = props.userId === user?.id;
+  const isPostAuthor = props.userId === props.authorId;
   return (
     <div className="flex bg-neutral-focus">
       <div className="w-full max-w-[95%]">
@@ -33,6 +38,9 @@ export default function PostComment(props: Comment) {
                 <span className="text-white hover:cursor-pointer hover:underline">
                   u/{props.username}
                 </span>
+                {isPostAuthor && (
+                  <span className="ml-2 text-xs text-white">(OP)</span>
+                )}
               </Link>
               <span>-</span>
               <span>{`${dayjs(props.createdAt).fromNow()}`}</span>
