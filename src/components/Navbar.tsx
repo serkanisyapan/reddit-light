@@ -20,7 +20,10 @@ export const Navbar = () => {
     userContent = (
       <div className="flex items-center gap-2">
         <div className="tooltip tooltip-bottom mr-2" data-tip="Create Post">
-          <Link href="/create-post">
+          <Link
+            className="flex items-center justify-center"
+            href="/create-post"
+          >
             <PlusIcon />
           </Link>
         </div>
@@ -59,7 +62,7 @@ export const Navbar = () => {
           className="flex flex-row items-center gap-2 text-xl normal-case"
         >
           <Image
-            className="box-border rounded-full border-[2px] border-[#df744a] object-cover"
+            className="box-border rounded-full object-cover"
             src="/redditlight.png"
             alt="Reddit Light"
             width={52}
