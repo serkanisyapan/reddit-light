@@ -68,7 +68,7 @@ export const Navbar = () => {
             width={52}
             height={52}
           />
-          <span className="hidden md:block">Reddit Light</span>
+          <span className="hidden md:block">reddit-light</span>
         </Link>
         {profileName && (
           <span className="ml-3 hidden text-base sm:block">
